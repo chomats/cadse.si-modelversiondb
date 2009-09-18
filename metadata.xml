@@ -1,29 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<iPOJO xmlns:extender="org.apache.felix.ipojo.extender">
-
-	<Component
-		className="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" immediate="true">
-		
-		<provides>
-			<!-- property name="db.database" field="m_baseName" value="UNDEFINED"/>
-			<property name="db.type" type="java.lang.String" value="UNDEFINED"/>
-			<property name="db.host" field="m_baseHost" value="UNDEFINED"/>
-			<property name="db.port" field="m_basePort" value="-1"/ -->
-		</provides>
-		
-		<controller field="m_enable"/>
-			
+<ipojo>
+	<component immediate="true" classname="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" factory="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" architecture="true">
 		<callback transition="validate" method="start"/>
 		<callback transition="invalidate" method="stop"/>
-		
-		<properties configurable="false">
-			<property name="db.allowAdmin" field="m_allowAdmin" value="false"/>
+		<provides interface="fr.imag.adele.teamwork.db.ModelVersionDBService"/>
+		<properties configurable="true">
+			<property field="m_allowAdmin" name="db.allowAdmin" type="boolean"/>
 		</properties>
-
-	</Component>
-	
-	<instance component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" name="ModelVersionDBInst">
-		<property name="db.allowAdmin" value="true"/>
-  	</instance>
-
-</iPOJO>
+	</component>
+	<instance component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl.instance">
+		<property name="db.allowAdmin" value="true" type="boolean"/>
+	</instance>
+</ipojo>

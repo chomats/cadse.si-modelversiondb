@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>SI.Workspace.ModelVersionDBImpl</name>
+	<name>fr.imag.adele.cadse.si.workspace.modelversiondbimpl</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -11,34 +11,18 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>fede.tool.workspace.view.composition.builder</name>
+			<name>org.eclipse.pde.ManifestBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>fede.tool.workspace.view.validation.builder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>fede.tool.workspace.view.packaging.builder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>fr.imag.adele.cadse.env_melusine.builder.MD</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>org.maven.ide.eclipse.maven2Builder</name>
+			<name>org.eclipse.pde.SchemaBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.maven.ide.eclipse.maven2Nature</nature>
-		<nature>fede.tool.workspace.view.Melusine</nature>
+		<nature>org.eclipse.pde.PluginNature</nature>
 	</natures>
 </projectDescription>
