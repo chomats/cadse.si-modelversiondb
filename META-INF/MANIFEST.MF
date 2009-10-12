@@ -1,316 +1,301 @@
 Manifest-Version: 1.0
-Export-Package: fr.imag.adele.teamwork.db.impl;version="1.0.0"
-iPOJO-Components: component { $immediate="true" $classname="fr.imag.ad
- ele.teamwork.db.impl.ModelVersionDBImpl" $factory="fr.imag.adele.team
- work.db.impl.ModelVersionDBImpl" $architecture="true" callback { $tra
- nsition="validate" $method="start" }callback { $transition="invalidat
- e" $method="stop" }provides { $interface="fr.imag.adele.teamwork.db.M
- odelVersionDBService" }properties { $configurable="true" property { $
- field="m_allowAdmin" $name="db.allowAdmin" $type="boolean" }}manipula
- tion { field { $name="m_logger" $type="org.apache.felix.ipojo.util.Lo
- gger" }field { $name="m_transaction" $type="boolean" }field { $name="
- m_context" $type="org.osgi.framework.BundleContext" }field { $name="m
- _allowAdmin" $type="boolean" }field { $name="m_enable" $type="boolean
- " }field { $name="m_connections" $type="java.util.Map" }field { $name
- ="m_started" $type="boolean" }field { $name="m_connection" $type="fr.
- imag.adele.teamwork.db.impl.ConnectionDef" }method { $arguments="{org
- .osgi.framework.BundleContext}" $name="$init" }method { $name="loadDr
- iverClass" }method { $arguments="{java.lang.String}" $name="setConnec
- tionURL" }method { $arguments="{java.lang.String,java.lang.String,jav
- a.lang.String}" $name="setConnectionURL" }method { $arguments="{java.
- lang.String,java.lang.String,java.lang.String}" $name="setConnectionU
- RLInternal" }method { $arguments="{fr.imag.adele.teamwork.db.impl.Con
- nectionDef}" $name="setCurrentConnection" }method { $arguments="{java
- .lang.String,java.lang.String,int,java.lang.String}" $name="setConnec
- tionURL" }method { $arguments="{java.lang.String,java.lang.String,int
- ,java.lang.String,java.lang.String,java.lang.String}" $name="setConne
- ctionURL" }method { $arguments="{java.lang.String,java.lang.String}" 
- $name="checkLoginAndPassword" }method { $arguments="{java.lang.String
- ,java.lang.String,int,java.lang.String,java.lang.String,java.lang.Str
- ing}" $name="setConnectionURLInternal" }method { $name="configureConn
- ection" }method { $name="getConnectionURL" $return="java.lang.String"
-  }method { $name="getLogin" $return="java.lang.String" }method { $nam
- e="isConnected" $return="boolean" }method { $name="start" }method { $
- arguments="{fr.imag.adele.teamwork.db.impl.ConnectionDef}" $name="ope
- nConnection" }method { $arguments="{fr.imag.adele.teamwork.db.impl.Co
- nnectionDef}" $name="initConnection" }method { $arguments="{java.lang
- .String,java.lang.Integer}" $name="executeCreateSequence" }method { $
- arguments="{java.lang.String,int}" $name="executeResetSequence" }meth
- od { $name="stop" }method { $arguments="{fr.imag.adele.teamwork.db.im
- pl.ConnectionDef}" $name="closeConnection" }method { $arguments="{jav
- a.lang.String}" $name="getDropSequenceQuery" $return="java.lang.Strin
- g" }method { $name="clearTransaction" }method { $arguments="{java.lan
- g.String,boolean}" $name="executeQueryWithScrollable" $return="java.s
- ql.ResultSet" }method { $arguments="{java.lang.String}" $name="execut
- eQuery" $return="java.sql.ResultSet" }method { $arguments="{java.lang
- .String,boolean}" $name="executeQuery" $return="java.sql.ResultSet" }
- method { $arguments="{java.lang.String}" $name="executeUpdate" $retur
- n="int" }method { $arguments="{java.util.UUID,java.util.UUID,java.uti
- l.Map,boolean}" $name="createObject" $return="int" }method { $name="b
- eginInternalTransaction" }method { $name="initSavepointPrefix" }metho
- d { $arguments="{java.lang.String}" $name="genNewIdx" $return="int" }
- method { $arguments="{java.sql.Savepoint}" $name="rollbackToSavepoint
- " }method { $name="commitInternalTransaction" }method { $arguments="{
- java.lang.Exception}" $name="rollbackInternalTransaction" }method { $
- arguments="{fr.imag.adele.teamwork.db.impl.ConnectionDef}" $name="rol
- lbackAllInternalTransactions" }method { $arguments="{fr.imag.adele.te
- amwork.db.Revision,java.lang.String,java.util.Map,java.util.Map,java.
- util.Map}" $name="storeState" }method { $arguments="{fr.imag.adele.te
- amwork.db.Revision,java.lang.String,java.util.List,java.util.List}" $
- name="updateAttrValuesInternal" }method { $arguments="{java.lang.Stri
- ng}" $name="createPreparedStatement" $return="fr.imag.adele.teamwork.
- db.impl.PStatement" }method { $arguments="{fr.imag.adele.teamwork.db.
- impl.PStatement,int,java.lang.Object}" $name="setValue" }method { $ar
- guments="{fr.imag.adele.teamwork.db.impl.PStatement,int,java.lang.Obj
- ect}" $name="setSerializableObject" }method { $arguments="{java.util.
- UUID,java.util.Map,boolean}" $name="checkAttributes" $return="java.ut
- il.Map" }method { $arguments="{java.lang.String}" $name="getAttrIdx" 
- $return="int" }method { $arguments="{java.util.UUID,java.lang.String,
- java.lang.String,java.lang.String}" $name="migrateCol" }method { $arg
- uments="{int}" $name="getAttrColName" $return="java.lang.String" }met
- hod { $arguments="{java.lang.String,java.lang.String,java.lang.String
- }" $name="getCopyColumnQuery" $return="java.lang.String" }method { $a
- rguments="{java.lang.String,java.lang.String,java.lang.String}" $name
- ="getAddColumnQuery" $return="java.lang.String" }method { $arguments=
- "{java.lang.String,java.lang.String}" $name="getRemoveColumnQuery" $r
- eturn="java.lang.String" }method { $arguments="{java.lang.String,java
- .lang.String,java.lang.String,boolean}" $name="getAlterTableColumnQue
- ry" $return="java.lang.String" }method { $arguments="{java.lang.Strin
- g,java.util.Map}" $name="createTypeTable" }method { $arguments="{java
- .util.Map}" $name="getAttributes" $return="java.util.Map" }method { $
- arguments="{java.util.UUID}" $name="checkTypeTableExist" $return="jav
- a.lang.String" }method { $arguments="{java.util.UUID}" $name="getType
- TabName" $return="java.lang.String" }method { $name="genTypeTabName" 
- $return="java.lang.String" }method { $arguments="{java.lang.String,fr
- .imag.adele.teamwork.db.impl.Assignment[]}" $name="getBeginUpdateQuer
- y" $return="java.lang.StringBuffer" }method { $arguments="{fr.imag.ad
- ele.teamwork.db.impl.Assignment[]}" $name="setTypeUtilOnAssigns" }met
- hod { $arguments="{java.util.UUID}" $name="typeExistsInTypeTable" $re
- turn="boolean" }method { $arguments="{java.lang.String}" $name="check
- TableExist" }method { $arguments="{java.lang.String}" $name="addDefau
- ltEntries" }method { $arguments="{java.lang.StringBuffer,java.lang.St
- ring}" $name="addColumnsDef" }method { $arguments="{java.lang.StringB
- uffer}" $name="addLinkTableColDef" }method { $arguments="{java.lang.S
- tringBuffer,java.lang.String,java.lang.String[]}" $name="addMultipleP
- KPart" }method { $arguments="{java.util.UUID,java.util.UUID,boolean}"
-  $name="addObjToObjTable" $return="fr.imag.adele.teamwork.db.Revision
- " }method { $arguments="{java.lang.String,fr.imag.adele.teamwork.db.i
- mpl.Assignment[]}" $name="getInsertQuery" $return="java.lang.String" 
- }method { $arguments="{java.lang.String,java.lang.String[]}" $name="g
- etInsertQuery" $return="java.lang.StringBuffer" }method { $arguments=
- "{java.lang.String}" $name="getBeginInsertQuery" $return="java.lang.S
- tringBuffer" }method { $arguments="{java.lang.StringBuffer}" $name="a
- ddQuerySeparator" }method { $arguments="{java.lang.StringBuffer}" $na
- me="addColDefSeparator" }method { $arguments="{java.lang.StringBuffer
- ,java.lang.String,java.lang.String,boolean}" $name="addCreateTableCol
- umnPart" }method { $arguments="{java.lang.StringBuffer,java.lang.Stri
- ng,java.lang.String,boolean,boolean}" $name="addCreateTableColumnPart
- " }method { $arguments="{java.lang.String}" $name="getBeginCreateTabl
- eQuery" $return="java.lang.StringBuffer" }method { $arguments="{boole
- an,java.lang.String}" $name="getBeginCreateTableQuery" $return="java.
- lang.StringBuffer" }method { $arguments="{boolean,boolean,java.lang.S
- tring}" $name="getBeginCreateTableQuery" $return="java.lang.StringBuf
- fer" }method { $arguments="{boolean,java.lang.String,java.lang.String
- []}" $name="getBeginSelectQuery" $return="java.lang.StringBuffer" }me
- thod { $arguments="{java.lang.StringBuffer}" $name="getEndCreateTable
- Query" $return="java.lang.String" }method { $arguments="{java.lang.St
- ring}" $name="tableExist" $return="boolean" }method { $arguments="{ja
- va.util.UUID}" $name="deleteObject" }method { $arguments="{java.util.
- UUID,int}" $name="getOutgoingLinkTypes" $return="java.util.Set" }meth
- od { $arguments="{java.util.UUID,int,boolean}" $name="getLinkTypesFro
- mObjInternal" $return="java.util.Set" }method { $arguments="{java.uti
- l.UUID,int}" $name="getIncomingLinkTypes" $return="java.util.Set" }me
- thod { $arguments="{java.util.UUID}" $name="getObjNumber" $return="in
- t" }method { $arguments="{java.util.UUID,java.lang.String,boolean}" $
- name="deleteType" }method { $arguments="{java.lang.String}" $name="ge
- tBeginDeleteQuery" $return="java.lang.StringBuffer" }method { $argume
- nts="{java.util.UUID}" $name="getObjectType" $return="java.util.UUID"
-  }method { $arguments="{java.lang.String}" $name="deleteTable" }metho
- d { $arguments="{java.lang.String}" $name="getDropTableQuery" $return
- ="java.lang.String" }method { $arguments="{java.util.UUID}" $name="ob
- jExists" $return="boolean" }method { $arguments="{java.util.UUID,int}
- " $name="objExists" $return="boolean" }method { $arguments="{int,bool
- ean,boolean}" $name="checkRevisionParam" }method { $arguments="{java.
- sql.SQLException}" $name="isTableNotExistError" $return="boolean" }me
- thod { $arguments="{java.lang.StringBuffer,java.lang.String,java.lang
- .Object}" $name="addEqualPart" }method { $arguments="{java.lang.Strin
- gBuffer,java.lang.String}" $name="addEqualPart" }method { $arguments=
- "{java.lang.StringBuffer}" $name="getEndQuery" $return="java.lang.Str
- ing" }method { $arguments="{java.lang.StringBuffer}" $name="addWhereP
- art" }method { $arguments="{java.lang.StringBuffer}" $name="addAndPar
- t" }method { $name="getObjects" $return="java.util.Set" }method { $ar
- guments="{java.util.UUID}" $name="getObjects" $return="java.util.Set"
-  }method { $arguments="{java.util.UUID,java.util.UUID,int,java.util.U
- UID,int,java.util.Map}" $name="addLink" $return="fr.imag.adele.teamwo
- rk.db.Revision" }method { $arguments="{java.lang.String}" $name="next
- ValueForSeq" $return="java.lang.String" }method { $arguments="{java.l
- ang.StringBuffer,java.util.UUID,java.util.UUID,int,java.util.UUID,int
- ,java.lang.String[]}" $name="selectLinksToUpdate" }method { $argument
- s="{java.util.UUID,int,java.util.UUID,int,java.lang.String,java.lang.
- String}" $name="getAllSrcRevJoinDestRev" $return="java.lang.StringBuf
- fer" }method { $name="getTemporaryTable" $return="java.lang.String" }
- method { $arguments="{java.util.UUID,java.util.UUID,int}" $name="getL
- astOrder" $return="int" }method { $arguments="{java.lang.String,int}"
-  $name="getResetSequenceQuery" $return="java.lang.String" }method { $
- arguments="{java.util.UUID,boolean}" $name="setLinkSrcVersionSpecific
- " }method { $arguments="{java.util.UUID,boolean,java.lang.String}" $n
- ame="setLinkVersionSpecificInternal" }method { $arguments="{java.util
- .UUID,java.lang.String,boolean}" $name="setObjectAttVersionSpecific" 
- }method { $arguments="{boolean,java.lang.StringBuffer}" $name="workar
- oundMySQL" $return="java.lang.StringBuffer" }method { $arguments="{ja
- va.lang.String,java.util.List}" $name="getBeginUpdateQuery" $return="
- java.lang.StringBuffer" }method { $arguments="{boolean,java.lang.Stri
- ng,java.util.List}" $name="getBeginSelectQuery" $return="java.lang.St
- ringBuffer" }method { $arguments="{java.lang.String}" $name="getDropV
- iewQuery" $return="java.lang.String" }method { $arguments="{java.lang
- .String}" $name="getCreateViewQuery" $return="java.lang.StringBuffer"
-  }method { $arguments="{java.util.UUID}" $name="getLastObjectRevNb" $
- return="int" }method { $arguments="{java.util.UUID}" $name="getLastLi
- nkRevNb" $return="int" }method { $arguments="{java.util.UUID}" $name=
- "getLinkRevNbs" $return="int[]" }method { $arguments="{java.util.UUID
- }" $name="getObjectRevNbs" $return="int[]" }method { $arguments="{jav
- a.lang.String}" $name="maxFunction" $return="java.lang.String" }metho
- d { $arguments="{java.util.UUID}" $name="deleteLink" }method { $argum
- ents="{java.util.UUID}" $name="checkLinkIdParam" }method { $arguments
- ="{java.util.UUID}" $name="checkObjectIdParam" }method { $arguments="
- {java.util.UUID,java.util.UUID,int}" $name="getLinkNumber" $return="i
- nt" }method { $arguments="{java.util.UUID}" $name="getLinkDest" $retu
- rn="java.util.UUID" }method { $arguments="{java.lang.String,java.lang
- .String,java.util.UUID}" $name="getIdForLink" $return="java.util.UUID
- " }method { $arguments="{java.util.UUID}" $name="getLinkSrc" $return=
- "java.util.UUID" }method { $arguments="{java.util.UUID,int}" $name="g
- etLinkState" $return="java.util.Map" }method { $arguments="{java.util
- .UUID,int,boolean}" $name="manageRevNb" $return="int" }method { $argu
- ments="{java.util.UUID,int,java.util.UUID}" $name="getState" $return=
- "java.util.Map" }method { $arguments="{java.sql.ResultSet,java.lang.S
- tring,java.lang.String}" $name="getValue" $return="java.lang.Object" 
- }method { $arguments="{java.sql.ResultSet,java.lang.String}" $name="g
- etBoolean" $return="boolean" }method { $arguments="{java.sql.ResultSe
- t,java.lang.String}" $name="getSerializableObject" $return="java.lang
- .Object" }method { $arguments="{java.util.UUID,java.util.Map,java.uti
- l.Map}" $name="getAttributes" }method { $arguments="{java.util.UUID}"
-  $name="getLinkType" $return="java.util.UUID" }method { $arguments="{
- java.util.UUID,int,java.lang.String}" $name="getLinkValue" $return="j
- ava.lang.Object" }method { $arguments="{java.lang.String}" $name="che
- ckAttrNameParam" }method { $arguments="{java.util.UUID,int,java.util.
- UUID,java.lang.String}" $name="getValue" $return="java.lang.Object" }
- method { $arguments="{java.util.UUID,java.lang.String,boolean}" $name
- ="getAttribute" $return="fr.imag.adele.teamwork.db.impl.Attribute" }m
- ethod { $name="getLinks" $return="java.util.Set" }method { $arguments
- ="{java.util.UUID,int}" $name="getObjectState" $return="java.util.Map
- " }method { $arguments="{java.util.UUID,int,java.lang.String}" $name=
- "getObjectValue" $return="java.lang.Object" }method { $arguments="{ja
- va.util.UUID}" $name="linkExists" $return="boolean" }method { $argume
- nts="{java.util.UUID,int}" $name="linkExists" $return="boolean" }meth
- od { $arguments="{java.util.UUID,java.util.UUID,int,java.util.UUID,in
- t}" $name="linkExists" $return="boolean" }method { $arguments="{java.
- util.UUID,int,java.util.Map}" $name="setLinkState" }method { $argumen
- ts="{java.util.UUID,int,java.lang.String,java.lang.Object}" $name="se
- tLinkValue" }method { $arguments="{fr.imag.adele.teamwork.db.Revision
- ,java.lang.String,java.lang.Object,java.lang.String}" $name="updateVa
- lue" }method { $arguments="{java.util.UUID}" $name="getAttrLastIdx" $
- return="int" }method { $arguments="{java.util.UUID,int,java.util.Map}
- " $name="setObjectState" }method { $arguments="{java.util.UUID,java.u
- til.Map}" $name="getAttrVSFlag" $return="java.util.Map" }method { $ar
- guments="{java.util.UUID,int,java.lang.String,java.lang.Object}" $nam
- e="setObjectValue" }method { $arguments="{java.util.UUID,java.util.UU
- ID,int}" $name="getLinkDestRev" $return="java.util.List" }method { $a
- rguments="{java.util.UUID,java.util.UUID,int,java.util.UUID,int}" $na
- me="getLinkRev" $return="fr.imag.adele.teamwork.db.Revision" }method 
- { $arguments="{java.lang.String,java.lang.String,java.util.UUID,java.
- lang.String,java.util.UUID,java.lang.String,int}" $name="getRevisions
- ForLink" $return="java.util.List" }method { $arguments="{java.util.UU
- ID,java.util.UUID,int}" $name="getLinkSrcRev" $return="java.util.List
- " }method { $arguments="{java.lang.String,java.lang.String,java.util.
- UUID,java.lang.String,java.util.UUID}" $name="getIdsForLink" $return=
- "java.util.List" }method { $arguments="{java.util.UUID}" $name="getLi
- nks" $return="java.util.List" }method { $arguments="{java.lang.String
- Buffer,java.lang.String[]}" $name="addOrderByPart" }method { $argumen
- ts="{java.lang.StringBuffer,java.lang.String[]}" $name="addGroupByPar
- t" }method { $arguments="{java.util.UUID,java.util.Map,boolean}" $nam
- e="getObjectRevs" $return="java.util.List" }method { $arguments="{jav
- a.util.Map,java.util.Map,java.util.Map,java.util.Map,java.lang.String
- Buffer}" $name="addNotSerAttrEquals" }method { $arguments="{java.util
- .UUID}" $name="checkTypeParam" }method { $arguments="{java.lang.Strin
- gBuffer}" $name="removeAndPart" }method { $arguments="{java.util.UUID
- ,java.lang.String,java.lang.Object,boolean}" $name="getObjectRevs" $r
- eturn="java.util.List" }method { $arguments="{java.util.List}" $name=
- "keepOnlyLastRev" }method { $arguments="{java.lang.Object,java.lang.O
- bject}" $name="sameValues" $return="boolean" }method { $arguments="{j
- ava.util.UUID,java.util.UUID,int,java.util.UUID}" $name="getOutgoingL
- ink" $return="java.util.UUID" }method { $arguments="{java.util.UUID}"
-  $name="checkDestIdParam" }method { $arguments="{java.util.UUID}" $na
- me="checkSrcIdParam" }method { $arguments="{java.util.UUID,int,java.u
- til.UUID}" $name="getOutgoingLinks" $return="java.util.List" }method 
- { $name="getTypes" $return="java.util.Set" }method { $name="clear" }m
- ethod { $arguments="{java.lang.String}" $name="forceDeleteTable" }met
- hod { $name="checkConnection" }method { $arguments="{java.util.UUID,j
- ava.util.UUID,int}" $name="getOutgoingLinks" $return="java.util.List"
-  }method { $arguments="{java.util.UUID,java.util.UUID,int,java.util.U
- UID}" $name="getOutgoingLinksInternal" $return="java.util.List" }meth
- od { $arguments="{java.util.UUID,java.util.UUID,int,java.util.UUID}" 
- $name="getLinkId" $return="java.util.UUID" }method { $arguments="{jav
- a.util.UUID,java.util.UUID,int,java.util.UUID[]}" $name="reOrderLinks
- " }method { $arguments="{java.util.UUID,java.util.UUID,int,java.util.
- UUID[]}" $name="reOrderLinksInternal" }method { $name="beginTransacti
- on" }method { $name="commitTransaction" }method { $name="rollbackTran
- saction" }method { $arguments="{java.util.UUID,int}" $name="createNew
- ObjectRevision" $return="int" }method { $arguments="{java.util.UUID,i
- nt,int,java.util.UUID}" $name="cloneLinkRevisions" }method { $name="g
- etLinkTableColumns" $return="java.util.List" }method { $arguments="{j
- ava.lang.StringBuffer,java.util.List}" $name="addColumnsToInsertQuery
- " }method { $arguments="{java.lang.String,java.lang.String,java.util.
- List}" $name="replace" }method { $arguments="{java.util.UUID,java.uti
- l.UUID,int,java.util.UUID,int}" $name="deleteLink" }method { $argumen
- ts="{java.util.UUID,java.util.UUID,int,java.util.UUID}" $name="delete
- Link" }method { $arguments="{java.util.UUID,java.util.UUID,int}" $nam
- e="deleteIncomingLinks" }method { $arguments="{java.util.UUID,java.ut
- il.UUID,int,boolean}" $name="deleteLinksFromObjInternal" }method { $a
- rguments="{java.util.UUID,java.util.UUID,int}" $name="deleteOutgoingL
- inks" }method { $arguments="{java.util.UUID,int,int}" $name="changeLi
- nkDestRev" }method { $arguments="{java.util.UUID}" $name="isType" $re
- turn="boolean" }method { $arguments="{java.util.UUID,java.lang.String
- }" $name="isObjectAttVersionSpecific" $return="boolean" }method { $ar
- guments="{java.util.UUID,boolean}" $name="setLinkDestVersionSpecific"
-  }method { $arguments="{java.util.UUID}" $name="isLinkDestVersionSpec
- ific" $return="boolean" }method { $arguments="{java.util.UUID,java.la
- ng.String,boolean}" $name="isLinkVSInternal" $return="boolean" }metho
- d { $arguments="{java.util.UUID}" $name="isLinkSrcVersionSpecific" $r
- eturn="boolean" }method { $name="hasTransaction" $return="boolean" }i
- nterface { $name="fr.imag.adele.teamwork.db.ModelVersionDBService" }}
- }instance { $component="fr.imag.adele.teamwork.db.impl.ModelVersionDB
- Impl" $name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl.inst
- ance" property { $name="db.allowAdmin" $value="true" $type="boolean" 
- }}
-Bundle-ClassPath: .
-Bundle-Name: fr.imag.adele.cadse.si.workspace.modelversiondbimpl
-Bundle-Localization: plugin
-Created-By: envsam & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & i
- POJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO 
- & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPO
- JO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & 
- iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO
-  & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iP
- OJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO &
-  iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJ
- O & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & i
- POJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO 
- & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPO
- JO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO & iPOJO
-Ant-Version: Apache Ant 1.7.0
-Bundle-Vendor: Adele/LIG/ Grenoble University, France
-Eclipse-LazyStart: false
-ipojo-auto-start: true
-Bundle-Version: 2.2.1.qualifier
 Bundle-ManifestVersion: 2
-Bundle-Description: Bundle fr.imag.adele.cadse.si.workspace.modelversi
- ondbimpl
-Import-Package: fr.imag.adele.teamwork.db.impl;version=1.0.0, org.osgi
- .service.log;version=1.3, org.apache.felix.ipojo.util;version=0.8.0, 
- fr.imag.adele.fede.workspace.as.persistence;version=1.0.0, org.apache
- .felix.ipojo.architecture;version=0.8.0, fr.imag.adele.teamwork.db;ve
- rsion=1.0.0, org.apache.felix.ipojo;version=0.8.0, org.osgi.framework
- ;version=1.4.0, org.osgi.service.cm;version=1.2
-Bundle-SymbolicName: fr.imag.adele.cadse.si.workspace.modelversiondbim
- pl;singleton:=true
+Bundle-Name: fr.imag.adele.cadse.si.workspace.modelversiondbimpl
+Bundle-SymbolicName: fr.imag.adele.cadse.si.workspace.modelversiondbimpl;singleton:=true
+Bundle-Vendor: Adele/LIG/ Grenoble University, France
+Bundle-Version: 2.2.1.qualifier
+Bundle-Localization: plugin
+Bundle-ClassPath: .
+Bundle-Description: Bundle fr.imag.adele.cadse.si.workspace.modelversiondbimpl
+Export-Package: fr.imag.adele.teamwork.db.impl;version="2.2.1"
+Import-Package: fr.imag.adele.fede.workspace.as.persistence;version="1.0.0",
+ fr.imag.adele.packageinfo;version="1.0.0",
+ fr.imag.adele.teamwork.db,
+ fr.imag.adele.teamwork.db.impl;version="2.2.1",
+ org.apache.felix.ipojo;version="1.2.0",
+ org.apache.felix.ipojo.architecture;version="1.2.0",
+ org.apache.felix.ipojo.util;version="1.2.0",
+ org.osgi.framework;version="1.4.0",
+ org.osgi.service.cm;version="1.2",
+ org.osgi.service.log;version="1.3"
+Created-By: envsam & iPOJO
+iPOJO-Components: component { $immediate="true" $classname="fr.imag.ade
+ le.teamwork.db.impl.ModelVersionDBImpl" $factory="fr.imag.adele.teamwo
+ rk.db.impl.ModelVersionDBImpl" $architecture="true" callback { $transi
+ tion="validate" $method="start" }callback { $transition="invalidate" $
+ method="stop" }provides { $specification="fr.imag.adele.teamwork.db.Mo
+ delVersionDBService" }properties { $configurable="true" property { $fi
+ eld="m_allowAdmin" $name="db.allowAdmin" $type="boolean" }}manipulatio
+ n { field { $name="m_logger" $type="org.apache.felix.ipojo.util.Logger
+ " }field { $name="m_transaction" $type="boolean" }field { $name="m_con
+ text" $type="org.osgi.framework.BundleContext" }field { $name="m_allow
+ Admin" $type="boolean" }field { $name="m_enable" $type="boolean" }fiel
+ d { $name="m_connections" $type="java.util.Map" }field { $name="m_star
+ ted" $type="boolean" }field { $name="m_connection" $type="fr.imag.adel
+ e.teamwork.db.impl.ConnectionDef" }method { $arguments="{org.osgi.fram
+ ework.BundleContext}" $name="$init" }method { $name="loadDriverClass" 
+ }method { $arguments="{java.lang.String}" $name="setConnectionURL" }me
+ thod { $arguments="{java.lang.String,java.lang.String,java.lang.String
+ }" $name="setConnectionURL" }method { $arguments="{java.lang.String,ja
+ va.lang.String,java.lang.String}" $name="setConnectionURLInternal" }me
+ thod { $arguments="{fr.imag.adele.teamwork.db.impl.ConnectionDef}" $na
+ me="setCurrentConnection" }method { $arguments="{java.lang.String,java
+ .lang.String,int,java.lang.String}" $name="setConnectionURL" }method {
+  $arguments="{java.lang.String,java.lang.String,int,java.lang.String,j
+ ava.lang.String,java.lang.String}" $name="setConnectionURL" }method { 
+ $arguments="{java.lang.String,java.lang.String}" $name="checkLoginAndP
+ assword" }method { $arguments="{java.lang.String,java.lang.String,int,
+ java.lang.String,java.lang.String,java.lang.String}" $name="setConnect
+ ionURLInternal" }method { $name="configureConnection" }method { $name=
+ "getConnectionURL" $return="java.lang.String" }method { $name="getLogi
+ n" $return="java.lang.String" }method { $name="isConnected" $return="b
+ oolean" }method { $name="start" }method { $arguments="{fr.imag.adele.t
+ eamwork.db.impl.ConnectionDef}" $name="openConnection" }method { $argu
+ ments="{fr.imag.adele.teamwork.db.impl.ConnectionDef}" $name="initConn
+ ection" }method { $arguments="{java.lang.String,java.lang.Integer}" $n
+ ame="executeCreateSequence" }method { $arguments="{java.lang.String,in
+ t}" $name="executeResetSequence" }method { $name="stop" }method { $arg
+ uments="{fr.imag.adele.teamwork.db.impl.ConnectionDef}" $name="closeCo
+ nnection" }method { $arguments="{java.lang.String}" $name="getDropSequ
+ enceQuery" $return="java.lang.String" }method { $name="clearTransactio
+ n" }method { $arguments="{java.lang.String,boolean}" $name="executeQue
+ ryWithScrollable" $return="java.sql.ResultSet" }method { $arguments="{
+ java.lang.String}" $name="executeQuery" $return="java.sql.ResultSet" }
+ method { $arguments="{java.lang.String,boolean}" $name="executeQuery" 
+ $return="java.sql.ResultSet" }method { $arguments="{java.lang.String}"
+  $name="executeUpdate" $return="int" }method { $arguments="{java.util.
+ UUID,java.util.UUID,java.util.Map,boolean}" $name="createObject" $retu
+ rn="int" }method { $name="beginInternalTransaction" }method { $name="i
+ nitSavepointPrefix" }method { $arguments="{java.lang.String}" $name="g
+ enNewIdx" $return="int" }method { $arguments="{java.sql.Savepoint}" $n
+ ame="rollbackToSavepoint" }method { $name="commitInternalTransaction" 
+ }method { $arguments="{java.lang.Exception}" $name="rollbackInternalTr
+ ansaction" }method { $arguments="{fr.imag.adele.teamwork.db.impl.Conne
+ ctionDef}" $name="rollbackAllInternalTransactions" }method { $argument
+ s="{fr.imag.adele.teamwork.db.Revision,java.lang.String,java.util.Map,
+ java.util.Map,java.util.Map}" $name="storeState" }method { $arguments=
+ "{fr.imag.adele.teamwork.db.Revision,java.lang.String,java.util.List,j
+ ava.util.List}" $name="updateAttrValuesInternal" }method { $arguments=
+ "{java.lang.String}" $name="createPreparedStatement" $return="fr.imag.
+ adele.teamwork.db.impl.PStatement" }method { $arguments="{fr.imag.adel
+ e.teamwork.db.impl.PStatement,int,java.lang.Object}" $name="setValue" 
+ }method { $arguments="{fr.imag.adele.teamwork.db.impl.PStatement,int,j
+ ava.lang.Object}" $name="setSerializableObject" }method { $arguments="
+ {java.util.UUID,java.util.Map,boolean}" $name="checkAttributes" $retur
+ n="java.util.Map" }method { $arguments="{java.lang.String}" $name="get
+ AttrIdx" $return="int" }method { $arguments="{java.util.UUID,java.lang
+ .String,java.lang.String,java.lang.String}" $name="migrateCol" }method
+  { $arguments="{int}" $name="getAttrColName" $return="java.lang.String
+ " }method { $arguments="{java.lang.String,java.lang.String,java.lang.S
+ tring}" $name="getCopyColumnQuery" $return="java.lang.String" }method 
+ { $arguments="{java.lang.String,java.lang.String,java.lang.String}" $n
+ ame="getAddColumnQuery" $return="java.lang.String" }method { $argument
+ s="{java.lang.String,java.lang.String}" $name="getRemoveColumnQuery" $
+ return="java.lang.String" }method { $arguments="{java.lang.String,java
+ .lang.String,java.lang.String,boolean}" $name="getAlterTableColumnQuer
+ y" $return="java.lang.String" }method { $arguments="{java.lang.String,
+ java.util.Map}" $name="createTypeTable" }method { $arguments="{java.ut
+ il.Map}" $name="getAttributes" $return="java.util.Map" }method { $argu
+ ments="{java.util.UUID}" $name="checkTypeTableExist" $return="java.lan
+ g.String" }method { $arguments="{java.util.UUID}" $name="getTypeTabNam
+ e" $return="java.lang.String" }method { $name="genTypeTabName" $return
+ ="java.lang.String" }method { $arguments="{java.lang.String,fr.imag.ad
+ ele.teamwork.db.impl.Assignment[]}" $name="getBeginUpdateQuery" $retur
+ n="java.lang.StringBuffer" }method { $arguments="{fr.imag.adele.teamwo
+ rk.db.impl.Assignment[]}" $name="setTypeUtilOnAssigns" }method { $argu
+ ments="{java.util.UUID}" $name="typeExistsInTypeTable" $return="boolea
+ n" }method { $arguments="{java.lang.String}" $name="checkTableExist" }
+ method { $arguments="{java.lang.String}" $name="addDefaultEntries" }me
+ thod { $arguments="{java.lang.StringBuffer,java.lang.String}" $name="a
+ ddColumnsDef" }method { $arguments="{java.lang.StringBuffer}" $name="a
+ ddLinkTableColDef" }method { $arguments="{java.lang.StringBuffer,java.
+ lang.String,java.lang.String[]}" $name="addMultiplePKPart" }method { $
+ arguments="{java.util.UUID,java.util.UUID,boolean}" $name="addObjToObj
+ Table" $return="fr.imag.adele.teamwork.db.Revision" }method { $argumen
+ ts="{java.lang.String,fr.imag.adele.teamwork.db.impl.Assignment[]}" $n
+ ame="getInsertQuery" $return="java.lang.String" }method { $arguments="
+ {java.lang.String,java.lang.String[]}" $name="getInsertQuery" $return=
+ "java.lang.StringBuffer" }method { $arguments="{java.lang.String}" $na
+ me="getBeginInsertQuery" $return="java.lang.StringBuffer" }method { $a
+ rguments="{java.lang.StringBuffer}" $name="addQuerySeparator" }method 
+ { $arguments="{java.lang.StringBuffer}" $name="addColDefSeparator" }me
+ thod { $arguments="{java.lang.StringBuffer,java.lang.String,java.lang.
+ String,boolean}" $name="addCreateTableColumnPart" }method { $arguments
+ ="{java.lang.StringBuffer,java.lang.String,java.lang.String,boolean,bo
+ olean}" $name="addCreateTableColumnPart" }method { $arguments="{java.l
+ ang.String}" $name="getBeginCreateTableQuery" $return="java.lang.Strin
+ gBuffer" }method { $arguments="{boolean,java.lang.String}" $name="getB
+ eginCreateTableQuery" $return="java.lang.StringBuffer" }method { $argu
+ ments="{boolean,boolean,java.lang.String}" $name="getBeginCreateTableQ
+ uery" $return="java.lang.StringBuffer" }method { $arguments="{boolean,
+ java.lang.String,java.lang.String[]}" $name="getBeginSelectQuery" $ret
+ urn="java.lang.StringBuffer" }method { $arguments="{java.lang.StringBu
+ ffer}" $name="getEndCreateTableQuery" $return="java.lang.String" }meth
+ od { $arguments="{java.lang.String}" $name="tableExist" $return="boole
+ an" }method { $arguments="{java.util.UUID}" $name="deleteObject" }meth
+ od { $arguments="{java.util.UUID,int}" $name="getOutgoingLinkTypes" $r
+ eturn="java.util.Set" }method { $arguments="{java.util.UUID,int,boolea
+ n}" $name="getLinkTypesFromObjInternal" $return="java.util.Set" }metho
+ d { $arguments="{java.util.UUID,int}" $name="getIncomingLinkTypes" $re
+ turn="java.util.Set" }method { $arguments="{java.util.UUID}" $name="ge
+ tObjNumber" $return="int" }method { $arguments="{java.util.UUID,java.l
+ ang.String,boolean}" $name="deleteType" }method { $arguments="{java.la
+ ng.String}" $name="getBeginDeleteQuery" $return="java.lang.StringBuffe
+ r" }method { $arguments="{java.util.UUID}" $name="getObjectType" $retu
+ rn="java.util.UUID" }method { $arguments="{java.lang.String}" $name="d
+ eleteTable" }method { $arguments="{java.lang.String}" $name="getDropTa
+ bleQuery" $return="java.lang.String" }method { $arguments="{java.util.
+ UUID}" $name="objExists" $return="boolean" }method { $arguments="{java
+ .util.UUID,int}" $name="objExists" $return="boolean" }method { $argume
+ nts="{int,boolean,boolean}" $name="checkRevisionParam" }method { $argu
+ ments="{java.sql.SQLException}" $name="isTableNotExistError" $return="
+ boolean" }method { $arguments="{java.lang.StringBuffer,java.lang.Strin
+ g,java.lang.Object}" $name="addEqualPart" }method { $arguments="{java.
+ lang.StringBuffer,java.lang.String}" $name="addEqualPart" }method { $a
+ rguments="{java.lang.StringBuffer}" $name="getEndQuery" $return="java.
+ lang.String" }method { $arguments="{java.lang.StringBuffer}" $name="ad
+ dWherePart" }method { $arguments="{java.lang.StringBuffer}" $name="add
+ AndPart" }method { $name="getObjects" $return="java.util.Set" }method 
+ { $arguments="{java.util.UUID}" $name="getObjects" $return="java.util.
+ Set" }method { $arguments="{java.util.UUID,java.util.UUID,int,java.uti
+ l.UUID,int,java.util.Map}" $name="addLink" $return="fr.imag.adele.team
+ work.db.Revision" }method { $arguments="{java.lang.String}" $name="nex
+ tValueForSeq" $return="java.lang.String" }method { $arguments="{java.l
+ ang.StringBuffer,java.util.UUID,java.util.UUID,int,java.util.UUID,int,
+ java.lang.String[]}" $name="selectLinksToUpdate" }method { $arguments=
+ "{java.util.UUID,int,java.util.UUID,int,java.lang.String,java.lang.Str
+ ing}" $name="getAllSrcRevJoinDestRev" $return="java.lang.StringBuffer"
+  }method { $name="getTemporaryTable" $return="java.lang.String" }metho
+ d { $arguments="{java.util.UUID,java.util.UUID,int}" $name="getLastOrd
+ er" $return="int" }method { $arguments="{java.lang.String,int}" $name=
+ "getResetSequenceQuery" $return="java.lang.String" }method { $argument
+ s="{java.util.UUID,boolean}" $name="setLinkSrcVersionSpecific" }method
+  { $arguments="{java.util.UUID,boolean,java.lang.String}" $name="setLi
+ nkVersionSpecificInternal" }method { $arguments="{java.util.UUID,java.
+ lang.String,boolean}" $name="setObjectAttVersionSpecific" }method { $a
+ rguments="{boolean,java.lang.StringBuffer}" $name="workaroundMySQL" $r
+ eturn="java.lang.StringBuffer" }method { $arguments="{java.lang.String
+ ,java.util.List}" $name="getBeginUpdateQuery" $return="java.lang.Strin
+ gBuffer" }method { $arguments="{boolean,java.lang.String,java.util.Lis
+ t}" $name="getBeginSelectQuery" $return="java.lang.StringBuffer" }meth
+ od { $arguments="{java.lang.String}" $name="getDropViewQuery" $return=
+ "java.lang.String" }method { $arguments="{java.lang.String}" $name="ge
+ tCreateViewQuery" $return="java.lang.StringBuffer" }method { $argument
+ s="{java.util.UUID}" $name="getLastObjectRevNb" $return="int" }method 
+ { $arguments="{java.util.UUID}" $name="getLastLinkRevNb" $return="int"
+  }method { $arguments="{java.util.UUID}" $name="getLinkRevNbs" $return
+ ="int[]" }method { $arguments="{java.util.UUID}" $name="getObjectRevNb
+ s" $return="int[]" }method { $arguments="{java.lang.String}" $name="ma
+ xFunction" $return="java.lang.String" }method { $arguments="{java.util
+ .UUID}" $name="deleteLink" }method { $arguments="{java.util.UUID}" $na
+ me="checkLinkIdParam" }method { $arguments="{java.util.UUID}" $name="c
+ heckObjectIdParam" }method { $arguments="{java.util.UUID,java.util.UUI
+ D,int}" $name="getLinkNumber" $return="int" }method { $arguments="{jav
+ a.util.UUID}" $name="getLinkDest" $return="java.util.UUID" }method { $
+ arguments="{java.lang.String,java.lang.String,java.util.UUID}" $name="
+ getIdForLink" $return="java.util.UUID" }method { $arguments="{java.uti
+ l.UUID}" $name="getLinkSrc" $return="java.util.UUID" }method { $argume
+ nts="{java.util.UUID,int}" $name="getLinkState" $return="java.util.Map
+ " }method { $arguments="{java.util.UUID,int,boolean}" $name="manageRev
+ Nb" $return="int" }method { $arguments="{java.util.UUID,int,java.util.
+ UUID}" $name="getState" $return="java.util.Map" }method { $arguments="
+ {java.sql.ResultSet,java.lang.String,java.lang.String}" $name="getValu
+ e" $return="java.lang.Object" }method { $arguments="{java.sql.ResultSe
+ t,java.lang.String}" $name="getBoolean" $return="boolean" }method { $a
+ rguments="{java.sql.ResultSet,java.lang.String}" $name="getSerializabl
+ eObject" $return="java.lang.Object" }method { $arguments="{java.util.U
+ UID,java.util.Map,java.util.Map}" $name="getAttributes" }method { $arg
+ uments="{java.util.UUID}" $name="getLinkType" $return="java.util.UUID"
+  }method { $arguments="{java.util.UUID,int,java.lang.String}" $name="g
+ etLinkValue" $return="java.lang.Object" }method { $arguments="{java.la
+ ng.String}" $name="checkAttrNameParam" }method { $arguments="{java.uti
+ l.UUID,int,java.util.UUID,java.lang.String}" $name="getValue" $return=
+ "java.lang.Object" }method { $arguments="{java.util.UUID,java.lang.Str
+ ing,boolean}" $name="getAttribute" $return="fr.imag.adele.teamwork.db.
+ impl.Attribute" }method { $name="getLinks" $return="java.util.Set" }me
+ thod { $arguments="{java.util.UUID,int}" $name="getObjectState" $retur
+ n="java.util.Map" }method { $arguments="{java.util.UUID,int,java.lang.
+ String}" $name="getObjectValue" $return="java.lang.Object" }method { $
+ arguments="{java.util.UUID}" $name="linkExists" $return="boolean" }met
+ hod { $arguments="{java.util.UUID,int}" $name="linkExists" $return="bo
+ olean" }method { $arguments="{java.util.UUID,java.util.UUID,int,java.u
+ til.UUID,int}" $name="linkExists" $return="boolean" }method { $argumen
+ ts="{java.util.UUID,int,java.util.Map}" $name="setLinkState" }method {
+  $arguments="{java.util.UUID,int,java.lang.String,java.lang.Object}" $
+ name="setLinkValue" }method { $arguments="{fr.imag.adele.teamwork.db.R
+ evision,java.lang.String,java.lang.Object,java.lang.String}" $name="up
+ dateValue" }method { $arguments="{java.util.UUID}" $name="getAttrLastI
+ dx" $return="int" }method { $arguments="{java.util.UUID,int,java.util.
+ Map}" $name="setObjectState" }method { $arguments="{java.util.UUID,jav
+ a.util.Map}" $name="getAttrVSFlag" $return="java.util.Map" }method { $
+ arguments="{java.util.UUID,int,java.lang.String,java.lang.Object}" $na
+ me="setObjectValue" }method { $arguments="{java.util.UUID,java.util.UU
+ ID,int}" $name="getLinkDestRev" $return="java.util.List" }method { $ar
+ guments="{java.util.UUID,java.util.UUID,int,java.util.UUID,int}" $name
+ ="getLinkRev" $return="fr.imag.adele.teamwork.db.Revision" }method { $
+ arguments="{java.lang.String,java.lang.String,java.util.UUID,java.lang
+ .String,java.util.UUID,java.lang.String,int}" $name="getRevisionsForLi
+ nk" $return="java.util.List" }method { $arguments="{java.util.UUID,jav
+ a.util.UUID,int}" $name="getLinkSrcRev" $return="java.util.List" }meth
+ od { $arguments="{java.lang.String,java.lang.String,java.util.UUID,jav
+ a.lang.String,java.util.UUID}" $name="getIdsForLink" $return="java.uti
+ l.List" }method { $arguments="{java.util.UUID}" $name="getLinks" $retu
+ rn="java.util.List" }method { $arguments="{java.lang.StringBuffer,java
+ .lang.String[]}" $name="addOrderByPart" }method { $arguments="{java.la
+ ng.StringBuffer,java.lang.String[]}" $name="addGroupByPart" }method { 
+ $arguments="{java.util.UUID,java.util.Map,boolean}" $name="getObjectRe
+ vs" $return="java.util.List" }method { $arguments="{java.util.Map,java
+ .util.Map,java.util.Map,java.util.Map,java.lang.StringBuffer}" $name="
+ addNotSerAttrEquals" }method { $arguments="{java.util.UUID}" $name="ch
+ eckTypeParam" }method { $arguments="{java.lang.StringBuffer}" $name="r
+ emoveAndPart" }method { $arguments="{java.util.UUID,java.lang.String,j
+ ava.lang.Object,boolean}" $name="getObjectRevs" $return="java.util.Lis
+ t" }method { $arguments="{java.util.List}" $name="keepOnlyLastRev" }me
+ thod { $arguments="{java.lang.Object,java.lang.Object}" $name="sameVal
+ ues" $return="boolean" }method { $arguments="{java.util.UUID,java.util
+ .UUID,int,java.util.UUID}" $name="getOutgoingLink" $return="java.util.
+ UUID" }method { $arguments="{java.util.UUID}" $name="checkDestIdParam"
+  }method { $arguments="{java.util.UUID}" $name="checkSrcIdParam" }meth
+ od { $arguments="{java.util.UUID,int,java.util.UUID}" $name="getOutgoi
+ ngLinks" $return="java.util.List" }method { $name="getTypes" $return="
+ java.util.Set" }method { $name="clear" }method { $arguments="{java.lan
+ g.String}" $name="forceDeleteTable" }method { $name="checkConnection" 
+ }method { $arguments="{java.util.UUID,java.util.UUID,int}" $name="getO
+ utgoingLinks" $return="java.util.List" }method { $arguments="{java.uti
+ l.UUID,java.util.UUID,int,java.util.UUID}" $name="getOutgoingLinksInte
+ rnal" $return="java.util.List" }method { $arguments="{java.util.UUID,j
+ ava.util.UUID,int,java.util.UUID}" $name="getLinkId" $return="java.uti
+ l.UUID" }method { $arguments="{java.util.UUID,java.util.UUID,int,java.
+ util.UUID[]}" $name="reOrderLinks" }method { $arguments="{java.util.UU
+ ID,java.util.UUID,int,java.util.UUID[]}" $name="reOrderLinksInternal" 
+ }method { $name="beginTransaction" }method { $name="commitTransaction"
+  }method { $name="rollbackTransaction" }method { $arguments="{java.uti
+ l.UUID,int}" $name="createNewObjectRevision" $return="int" }method { $
+ arguments="{java.util.UUID,int,int,java.util.UUID}" $name="cloneLinkRe
+ visions" }method { $name="getLinkTableColumns" $return="java.util.List
+ " }method { $arguments="{java.lang.StringBuffer,java.util.List}" $name
+ ="addColumnsToInsertQuery" }method { $arguments="{java.lang.String,jav
+ a.lang.String,java.util.List}" $name="replace" }method { $arguments="{
+ java.util.UUID,java.util.UUID,int,java.util.UUID,int}" $name="deleteLi
+ nk" }method { $arguments="{java.util.UUID,java.util.UUID,int,java.util
+ .UUID}" $name="deleteLink" }method { $arguments="{java.util.UUID,java.
+ util.UUID,int}" $name="deleteIncomingLinks" }method { $arguments="{jav
+ a.util.UUID,java.util.UUID,int,boolean}" $name="deleteLinksFromObjInte
+ rnal" }method { $arguments="{java.util.UUID,java.util.UUID,int}" $name
+ ="deleteOutgoingLinks" }method { $arguments="{java.util.UUID,int,int}"
+  $name="changeLinkDestRev" }method { $arguments="{java.util.UUID}" $na
+ me="isType" $return="boolean" }method { $arguments="{java.util.UUID,ja
+ va.lang.String}" $name="isObjectAttVersionSpecific" $return="boolean" 
+ }method { $arguments="{java.util.UUID,boolean}" $name="setLinkDestVers
+ ionSpecific" }method { $arguments="{java.util.UUID}" $name="isLinkDest
+ VersionSpecific" $return="boolean" }method { $arguments="{java.util.UU
+ ID,java.lang.String,boolean}" $name="isLinkVSInternal" $return="boolea
+ n" }method { $arguments="{java.util.UUID}" $name="isLinkSrcVersionSpec
+ ific" $return="boolean" }method { $name="hasTransaction" $return="bool
+ ean" }interface { $name="fr.imag.adele.teamwork.db.ModelVersionDBServi
+ ce" }}}instance { $component="fr.imag.adele.teamwork.db.impl.ModelVers
+ ionDBImpl" $name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl.
+ instance" property { $name="db.allowAdmin" $value="true" $type="boolea
+ n" }}
+ipojo-auto-start: true
 
