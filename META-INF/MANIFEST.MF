@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: fr.imag.adele.cadse.si.workspace.modelversiondbimpl
+Bundle-SymbolicName: fr.imag.adele.cadse.si.workspace.modelversiondbimpl;singleton:=true
+Bundle-Vendor: Adele/LIG/ Grenoble University, France
+Bundle-Version: 2.2.1.qualifier
+Bundle-Localization: plugin
+Bundle-ClassPath: .
+Bundle-Description: Bundle fr.imag.adele.cadse.si.workspace.modelversiondbimpl
+Export-Package: fr.imag.adele.teamwork.db.impl;version="2.2.1"
+Import-Package: fr.imag.adele.fede.workspace.as.persistence;version="1.0.0",
+ fr.imag.adele.teamwork.db,
+ fr.imag.adele.teamwork.db.impl;version="2.2.1",
+ org.apache.felix.ipojo;version="1.2.0",
+ org.apache.felix.ipojo.architecture;version="1.2.0",
+ org.apache.felix.ipojo.util;version="1.2.0",
+ org.osgi.framework;version="1.4.0",
+ org.osgi.service.cm;version="1.2",
+ org.osgi.service.log;version="1.3"
+Created-By: envsam & iPOJO
+iPOJO-Components: component { $immediate="true" $classname="fr.imag.ade
+ le.teamwork.db.impl.ModelVersionDBImpl" $factory="fr.imag.adele.teamwo
+ rk.db.impl.ModelVersionDBImpl" $architecture="true" callback { $transi
+ tion="validate" $method="start" }callback { $transition="invalidate" $
+ method="stop" }provides { $specification="fr.imag.adele.teamwork.db.Mo
+ delVersionDBService" }properties { $configurable="true" property { $fi
+ eld="m_allowAdmin" $name="db.allowAdmin" $type="boolean" }}}instance {
+  $component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" $name=
+ "fr.imag.adele.cadse.si.workspace.modelversiondbimpl.instance" propert
+ y { $name="db.allowAdmin" $value="true" $type="boolean" }}
+ipojo-auto-start: true
+
