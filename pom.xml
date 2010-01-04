@@ -8,48 +8,30 @@
     <name>fr.imag.adele.cadse.si.ModelVersionDB</name>
     <version>2.3.0-SNAPSHOT</version>
     <description>Service implementation of a multi version database for models using HSQLDB or MySQL</description>
-
+	<parent>
+		<artifactId>fr.imag.adele.cadse.parent.ipojo</artifactId>
+		<groupId>fr.imag.adele.cadse</groupId>
+		<version>2.3.0-SNAPSHOT</version>
+		<relativePath>../fr.imag.adele.cadse.parent.ipojo</relativePath>
+	</parent>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
+            
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <manifestLocation>META-INF</manifestLocation>
                     <instructions>
-                        <Bundle-Name>${pom.name}</Bundle-Name>
-                        <Bundle-Description>${pom.name}</Bundle-Description>
                         <DynamicImport-Package>*</DynamicImport-Package>
+                        <Export-Package></Export-Package>
                         <Private-Package>
-                            fr.imag.adele.teamwork.db.impl,
+                            fr.imag.adele.teamwork.db.impl
                         </Private-Package>
-						<Ipojo-auto-start>true</Ipojo-auto-start>
-                       	<_removeheaders>Bnd-LastModified</_removeheaders>
                     </instructions>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-ipojo-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>ipojo-bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -57,17 +39,14 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>as.cu</artifactId>
-            <version>2.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>bak.pcj</groupId>
             <artifactId>bak.pcje</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.10</version>
         </dependency>
     </dependencies>
     <reporting>
