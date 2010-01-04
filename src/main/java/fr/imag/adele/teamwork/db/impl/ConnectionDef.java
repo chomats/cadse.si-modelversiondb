@@ -28,9 +28,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.felix.ipojo.util.Logger;
 
 
 import fr.imag.adele.teamwork.db.ModelVersionDBService;
@@ -253,7 +252,7 @@ public class ConnectionDef {
 		try {
 			return m_connection.isClosed();
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Unable to close the connection to database " + m_url, e);
+			m_logger.log(Logger.ERROR, "Unable to close the connection to database " + m_url, e);
 			return true;
 		}
 	}
@@ -276,18 +275,18 @@ public class ConnectionDef {
 			if ((m_connection == null) || (m_connection.isClosed())) {
 				if (m_login == null) {
 					m_connection = DriverManager.getConnection(m_url);
-					m_logger.log(Level.INFO, "JDBC Connection to " + m_url
+					m_logger.log(Logger.INFO, "JDBC Connection to " + m_url
 							+ " opened without login.");
 				} else {
 					m_connection = DriverManager.getConnection(m_url, m_login,
 							m_password);
-					m_logger.log(Level.INFO, "JDBC Connection to " + m_url
+					m_logger.log(Logger.INFO, "JDBC Connection to " + m_url
 							+ " opened with login " + m_login + ".");
 				}
 				m_connection.setAutoCommit(false);
 			}
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Cannot get the connection to database using URL " + 
+			m_logger.log(Logger.ERROR, "Cannot get the connection to database using URL " + 
 					m_url + ": " + e.getMessage(), e);
 		}
 	}
@@ -327,7 +326,7 @@ public class ConnectionDef {
 		try {
 			m_connection.close();
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "[ERROR IN DATABASE ACCESS] Cannot close the connection : "
+			m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] Cannot close the connection : "
 					+ e.getMessage(), e);
 		}
 	}
@@ -351,7 +350,7 @@ public class ConnectionDef {
 			Savepoint savepoint = m_connection.setSavepoint(savepointName);
 			m_savepoints.newSavepoint(savepoint);
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Set savepoint failed : ", e);
+			m_logger.log(Logger.ERROR, "Set savepoint failed : ", e);
 		} 
 	}
 	

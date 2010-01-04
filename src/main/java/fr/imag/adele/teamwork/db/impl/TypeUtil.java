@@ -401,5 +401,14 @@ public class TypeUtil {
 	private String getUndefinedSQLTypeDef() {
 		return getSerSQLTypeDef() + UNDEFINED_TYPE_ANNO;
 	}
+
+
+	public String getSQLText() {
+		if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			return "TEXT CHARACTER set utf8";
+		
+		return getVarchar2Def(1024);
+	}
+
 	
 }
