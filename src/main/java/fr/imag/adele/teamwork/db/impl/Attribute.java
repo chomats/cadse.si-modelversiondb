@@ -26,6 +26,8 @@ class Attribute {
 	
 	private boolean m_isVersionSpecific;
 	
+	private int typeId;
+	
 	Attribute(String type, String colName) {
 		this(type, colName, true);
 	}
@@ -34,6 +36,12 @@ class Attribute {
 		m_colName = colName;
 		m_type = type;
 		m_isVersionSpecific = isVersionSpec;
+	}
+	
+	Attribute(String sqltype, String colName, int typeId) {
+		m_colName = colName;
+		m_type = sqltype;
+		this.typeId = typeId;
 	}
 	
 	public String getType() {
@@ -50,6 +58,10 @@ class Attribute {
 
 	public void setColumn(String colName) {
 		m_colName = colName;
+	}
+	
+	public int getTypeId() {
+		return typeId;
 	}
 	
 }
