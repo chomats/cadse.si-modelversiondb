@@ -26,6 +26,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <manifestLocation>META-INF</manifestLocation>
                     <instructions>
                         <Bundle-Name>${pom.name}</Bundle-Name>
                         <Bundle-Description>${pom.name}</Bundle-Description>
@@ -33,6 +34,8 @@
                         <Private-Package>
                             fr.imag.adele.teamwork.db.impl,
                         </Private-Package>
+						<Ipojo-auto-start>true</Ipojo-auto-start>
+                       	<_removeheaders>Bnd-LastModified</_removeheaders>
                     </instructions>
                 </configuration>
             </plugin>
