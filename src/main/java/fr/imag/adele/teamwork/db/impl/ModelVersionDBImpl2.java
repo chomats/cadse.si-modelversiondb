@@ -4981,4 +4981,23 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
     }
 
 
+
+
+
+	@Override
+	public int getObjectType(int objectId) throws ModelVersionDBException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
+	@Override
+	public int[] getAllObjectTypesInt(int objectId)
+			throws ModelVersionDBException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

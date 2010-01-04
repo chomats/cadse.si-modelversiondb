@@ -20,6 +20,34 @@ package fr.imag.adele.teamwork.db.impl;
 
 public class SQLConstants {
 
+	public static final String P0_PART = "p0";
+	public static final String P1_PART = "p1";
+	public static final String P2_PART = "p2";
+	public static final String P3_PART = "p3";
+	public static final String P4_PART = "p4";
+	public static final String P5_PART = "p5";
+	public static final String P6_PART = "p6";
+	public static final String P7_PART = "p7";
+	public static final String P8_PART = "p8";
+	public static final String P9_PART = "p9";
+	
+	public static final String T0_PART = "a";
+	public static final String T1_PART = "b";
+	public static final String T2_PART = "c";
+	public static final String T3_PART = "d";
+	public static final String T4_PART = "e";
+	public static final String T5_PART = "f";
+	public static final String T6_PART = "g";
+	public static final String T7_PART = "h";
+	public static final String T8_PART = "i";
+	public static final String T9_PART = "j";
+	
+	public static final String SELECT_PART = "SELECT ";
+	public static final String FROM_PART = " FROM ";
+	public static final String WHERE_PART = " WHERE ";
+	public static final String COL_PART = " COL ";
+	public static final String EQUAL_PART = " = ";
+	public static final String NOT_EQUAL_PART = " <> ";
 	public static final String AND_PART = " AND ";
 	public static final String OR_PART = " OR ";
 	public static final String DISTINCT_PART = " DISTINCT ";
