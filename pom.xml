@@ -17,8 +17,6 @@
 
     <build>
         <plugins>
-            
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -26,7 +24,7 @@
                 <configuration>
                     <instructions>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Export-Package></Export-Package>
+                        <Export-Package>!*</Export-Package>
                         <Private-Package>
                             fr.imag.adele.teamwork.db.impl
                         </Private-Package>
@@ -51,13 +49,10 @@
         <dependency>
         	<groupId>org.eclipse</groupId>
         	<artifactId>org.eclipse.osgi</artifactId>
-        	<version>3.5.1.R35x_v20090827</version>
         </dependency>
         <dependency>
         	<groupId>org.apache.felix</groupId>
         	<artifactId>org.apache.felix.ipojo</artifactId>
-        	<version>1.4.0</version>
-        	<type>bundle</type>
         </dependency>
     </dependencies>
     <reporting>

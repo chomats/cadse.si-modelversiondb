@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 import bak.pcj.IntIterator;
@@ -51,6 +50,10 @@ import bak.pcj.map.IntKeyOpenHashMap;
 import bak.pcj.set.IntBitSet;
 import fr.imag.adele.cadse.core.CadseException;
 import java.util.UUID;
+
+import org.apache.felix.ipojo.util.Logger;
+import org.osgi.framework.BundleContext;
+
 import fr.imag.adele.cadse.core.ItemType;
 import fr.imag.adele.cadse.core.LinkType;
 import fr.imag.adele.cadse.core.LogicalWorkspace;
@@ -66,8 +69,6 @@ import fr.imag.adele.teamwork.db.ModelVersionDBException;
 import fr.imag.adele.teamwork.db.ModelVersionDBService;
 import fr.imag.adele.teamwork.db.ModelVersionDBService2;
 import fr.imag.adele.teamwork.db.TransactionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This model version database service implementation uses a HSQL, MySQL or Oracle database.
@@ -412,9 +413,9 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private Metadata	_metadata;
 
 
-	public ModelVersionDBImpl2() {
-		m_logger = Logger.getLogger(getClass().getName());
-        m_enable = true;
+	public ModelVersionDBImpl2(BundleContext bc) {
+		m_logger = new Logger(bc, "Registry logger " + bc.getBundle().getBundleId(), Logger.DEBUG);
+		m_enable = true;
 	}
 
 
@@ -442,13 +443,13 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				Class.forName(driverName).newInstance();
 			}
 		} catch (ClassNotFoundException c) {
-			m_logger.log(Level.SEVERE, " Could not find the database driver cause:\n",
+			m_logger.log(Logger.ERROR, " Could not find the database driver cause:\n",
 					c);
 		} catch (InstantiationException e) {
-			m_logger.log(Level.SEVERE, " Could not instantiate the database driver cause:\n",
+			m_logger.log(Logger.ERROR, " Could not instantiate the database driver cause:\n",
 					e);
 		} catch (IllegalAccessException e) {
-			m_logger.log(Level.SEVERE, " unexpected exception:\n", e);
+			m_logger.log(Logger.ERROR, " unexpected exception:\n", e);
 		}
 	}
 
@@ -569,7 +570,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		try {
 			initSavepointPrefix();
 		} catch (ModelVersionDBException e) {
-			m_logger.log(Level.SEVERE, "Transaction support cannot be initialized for " + m_connection, e);
+			m_logger.log(Logger.ERROR, "Transaction support cannot be initialized for " + m_connection, e);
 		}
 	}
 
@@ -587,7 +588,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 					executeCreateSequence(lastSeqName, 1);
 				} catch (SQLException sqlE) {
 					// sequence may already exists
-					m_logger.log(Level.FINEST, "Cannot create sequence "
+					m_logger.log(Logger.DEBUG, "Cannot create sequence "
 							+ lastSeqName + ": " + sqlE.getMessage(),
 							sqlE);
 				}
@@ -598,10 +599,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 			connection.commit();
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Cannot init the connection to database using URL " +
+			m_logger.log(Logger.ERROR, "Cannot init the connection to database using URL " +
 					connection.getURL() + ": " + e.getMessage(), e);
 		} catch (ModelVersionDBException e) {
-			m_logger.log(Level.SEVERE, "Cannot generate a new client index : "
+			m_logger.log(Logger.ERROR, "Cannot generate a new client index : "
 					+ e.getMessage(), e);
 		}
 	}
@@ -656,7 +657,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				connection.close();
 			}
 		} catch (Exception e) {
-			m_logger.log(Level.SEVERE, "[ERROR IN DATABASE ACCESS] Cannot close the connection : "
+			m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] Cannot close the connection : "
 							+ e.getMessage(), e);
 		}
 
@@ -695,7 +696,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 	private ResultSet executeQueryWithScrollable(String sql, boolean printError)
 			throws SQLException {
-		m_logger.log(Level.FINEST, "Execute sql query : " + sql);
+		m_logger.log(Logger.DEBUG, "Execute sql query : " + sql);
 		Statement stmt_scrollable = null;
 		try {
 			stmt_scrollable = m_connection.getConnection().createStatement(
@@ -703,10 +704,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 					ResultSet.CONCUR_READ_ONLY);
 			return stmt_scrollable.executeQuery(sql);
 		} catch (SQLException e) {
-			///m_logger.log(Level.FINEST, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
+			///m_logger.log(Logger.DEBUG, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
 				///			+ sql + ") : " + e.getMessage(), e);
 			if (printError) {
-				m_logger.log(Level.SEVERE, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
+				m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
 							+ sql + ") : " + e.getMessage(), e);
 			}
 
@@ -726,17 +727,17 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	public ResultSet executeQuery(String sql, boolean printError) throws SQLException {
-		m_logger.log(Level.FINEST, "Execute sql query : " + sql);
-		m_logger.log(Level.INFO, "Open statement " + sql);
+		m_logger.log(Logger.DEBUG, "Execute sql query : " + sql);
+		m_logger.log(Logger.INFO, "Open statement " + sql);
 		Statement stat = null;
 		try {
 			stat = m_connection.getConnection().createStatement();
 			return stat.executeQuery(sql);
 		} catch (SQLException e) {
-			m_logger.log(Level.FINEST, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
+			m_logger.log(Logger.DEBUG, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
 							+ sql + ") : " + e.getMessage(), e);
 			if (printError)
-				m_logger.log(Level.SEVERE, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
+				m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
 							+ sql + ") : " + e.getMessage(), e);
 
 			try {
@@ -751,7 +752,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	private int executeUpdate(String sql) throws SQLException {
-		m_logger.log(Level.FINEST, "Execute sql query : " + sql);
+		m_logger.log(Logger.DEBUG, "Execute sql query : " + sql);
 
 		int result = -1;
 		Statement stat = null;
@@ -759,7 +760,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			stat = m_connection.getConnection().createStatement();
 			result = stat.executeUpdate(sql);
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeUpdate("
+			m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeUpdate("
 							+ sql + ") : " + e.getMessage(), e);
 			throw e;
 		} finally {
@@ -847,7 +848,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 						new Assignment(ORDER_COL));
 
 				for (int i = 0; i < localTypeIds.length; i++) {
-					m_logger.log(Level.INFO, "insert into "+OBJ_TYPE_TAB+"<"+objectId+", "+localTypeIds[i]+" "+i);
+					m_logger.log(Logger.INFO, "insert into "+OBJ_TYPE_TAB+"<"+objectId+", "+localTypeIds[i]+" "+i);
 					ps = createPreparedStatement(query);
 					ps.getStatement().setInt(1, objectId);
 					ps.getStatement().setInt(2, localTypeIds[i]);
@@ -1103,11 +1104,11 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 	private void rollbackToSavepoint(Savepoint savepoint) {
 		try {
-			m_logger.log(Level.FINEST, "Rollback to savepoint " + savepoint.getSavepointName());
+			m_logger.log(Logger.DEBUG, "Rollback to savepoint " + savepoint.getSavepointName());
 			m_connection.getConnection().rollback(savepoint);
 			m_connection.getConnection().releaseSavepoint(savepoint);
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Rollback to savepoint failed.", e);
+			m_logger.log(Logger.ERROR, "Rollback to savepoint failed.", e);
 		}
 	}
 
@@ -1116,7 +1117,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			try {
 				m_connection.commit();
 			} catch (SQLException e) {
-				m_logger.log(Level.SEVERE, "Commit failed : ", e);
+				m_logger.log(Logger.ERROR, "Commit failed : ", e);
 				rollbackInternalTransaction(e);
 			}
 			return;
@@ -1124,11 +1125,11 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 		Savepoint savepoint = m_connection.popLastSavepoint();
 		try {
-			m_logger.log(Level.FINEST, "Commit savepoint " + savepoint.getSavepointName());
+			m_logger.log(Logger.DEBUG, "Commit savepoint " + savepoint.getSavepointName());
 			if (!m_connection.isOracle())
 				m_connection.getConnection().releaseSavepoint(savepoint);
 		} catch (SQLException e) {
-			m_logger.log(Level.SEVERE, "Commit failed : ", e);
+			m_logger.log(Logger.ERROR, "Commit failed : ", e);
 			rollbackToSavepoint(savepoint);
 		}
 	}
@@ -1138,7 +1139,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			try {
 				m_connection.rollback();
 			} catch (SQLException sqlError) {
-				m_logger.log(Level.SEVERE, "Internal rollback failed.", sqlError);
+				m_logger.log(Logger.ERROR, "Internal rollback failed.", sqlError);
 			}
 			return;
 		}
@@ -1152,7 +1153,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			try {
 				connection.rollback();
 			} catch (SQLException sqlSEVERE) {
-				m_logger.log(Level.SEVERE, "Internal rollback failed.", sqlSEVERE);
+				m_logger.log(Logger.ERROR, "Internal rollback failed.", sqlSEVERE);
 			}
 			return;
 		}
@@ -1164,10 +1165,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 					connection.getConnection().releaseSavepoint(savepoint);
 			} catch (SQLException e) {
 				try {
-					m_logger.log(Level.SEVERE, "Release savepoint " + savepoint.getSavepointName() + " failed.");
+					m_logger.log(Logger.ERROR, "Release savepoint " + savepoint.getSavepointName() + " failed.");
 				} catch (SQLException e1) {
 					// ignore it
-					m_logger.log(Level.SEVERE, "Release savepoint failed.", e);
+					m_logger.log(Logger.ERROR, "Release savepoint failed.", e);
 				}
 			}
 			connection.resetSavepoints();
@@ -2073,12 +2074,12 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			int typeSourceId = getLinkSrc(linkTypeId);
 			int typeDestId = getLinkDest(linkTypeId);
 			if (!isCompatibleLink(sourceId, typeSourceId)) {
-				m_logger.log(Level.SEVERE,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
+				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
 				throw new IllegalArgumentException(
 						NLS.bind("Source link {0} is not compatible with source type {1}", sourceId, typeSourceId));
 			}
 			if (!isCompatibleLink(destId, typeDestId)) {
-				m_logger.log(Level.SEVERE,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
+				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
 				throw new IllegalArgumentException(
 						NLS.bind("Destination link {0} is not compatible with destination type {1}.", destId, typeDestId));
 			}
@@ -3073,8 +3074,8 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	private String printDebug(int[] elts, Object[] args, String query) {
-		m_logger.log(Level.FINEST, querytoString(elts, args));
-		m_logger.log(Level.FINEST, query);
+		m_logger.log(Logger.DEBUG, querytoString(elts, args));
+		m_logger.log(Logger.DEBUG, query);
 		return query;
 	}
 
@@ -3253,7 +3254,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			try {
 				deleteTable(type, false);
 			} catch (ModelVersionDBException e) {
-				m_logger.log(Level.SEVERE, "Delete table " + getTypeTabName(type) + " failed.", e);
+				m_logger.log(Logger.ERROR, "Delete table " + getTypeTabName(type) + " failed.", e);
 			}
 		}
 
@@ -3281,7 +3282,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				deleteTable(table, view);
 			}
 		} catch (ModelVersionDBException e) {
-			m_logger.log(Level.SEVERE, "Delete table " + table + " failed.", e);
+			m_logger.log(Logger.ERROR, "Delete table " + table + " failed.", e);
 		}
 	}
 
@@ -3459,12 +3460,12 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			ps.getStatement().setInt(1, id1);
 			ps.getStatement().setInt(2, id2);
 			ps.executeUpdate();
-			m_logger.log(Level.INFO, "INSERT "+tabName+" ("+id1+","+id2+")");
+			m_logger.log(Logger.INFO, "INSERT "+tabName+" ("+id1+","+id2+")");
 		} catch(SQLException e) {
-			m_logger.log(Level.SEVERE, "INSERT "+tabName+" ("+id1+","+id2+")",e);
+			m_logger.log(Logger.ERROR, "INSERT "+tabName+" ("+id1+","+id2+")",e);
 			throw e;
 		} catch(IOException e) {
-			m_logger.log(Level.SEVERE, "INSERT "+tabName+" ("+id1+","+id2+")",e);
+			m_logger.log(Logger.ERROR, "INSERT "+tabName+" ("+id1+","+id2+")",e);
 			throw e;
 		} finally {
 			close(ps);
@@ -3538,11 +3539,11 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				if (!failed) {
 					try {
 						connection.commit();
-						m_logger.log(Level.FINEST,
+						m_logger.log(Logger.DEBUG,
 								"Commit transaction for connection to database "
 										+ connection + " done.");
 					} catch (SQLException e) {
-						m_logger.log(Level.SEVERE,
+						m_logger.log(Logger.ERROR,
 								"Fail to commit transaction for connection to database "
 										+ connection, e);
 						failed = true;
@@ -3552,9 +3553,9 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				if (failed) {
 					try {
 						connection.rollback();
-						m_logger.log(Level.FINEST, "Rollback transaction for connection to database " + connection + " done.");
+						m_logger.log(Logger.DEBUG, "Rollback transaction for connection to database " + connection + " done.");
 					} catch (SQLException sqlExcept) {
-						m_logger.log(Level.SEVERE, "Fail to rollback transaction for connection to database "
+						m_logger.log(Logger.ERROR, "Fail to rollback transaction for connection to database "
 								+ connection, sqlExcept);
 					}
 					throw new TransactionException("Commit Transaction failed.");
@@ -3576,7 +3577,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				try {
 					connection.rollback();
 				} catch (SQLException sqlExcept) {
-					m_logger.log(Level.SEVERE, "Fail to rollback transaction for connection to database "
+					m_logger.log(Logger.ERROR, "Fail to rollback transaction for connection to database "
 							+ connection, sqlExcept);
 					failed = true;
 				}
