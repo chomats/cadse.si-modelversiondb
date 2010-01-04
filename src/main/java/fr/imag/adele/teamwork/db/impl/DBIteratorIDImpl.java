@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
+import org.apache.felix.ipojo.util.Logger;
+
 import fr.imag.adele.teamwork.db.DBIteratorID;
 import fr.imag.adele.teamwork.db.ID3;
 import fr.imag.adele.teamwork.db.LinkInfo;
@@ -144,7 +146,7 @@ abstract class DBIteratorIDImpl<T> extends DBIteratorID<T> {
 			return _rs.next();
 		} catch (SQLException e) {
 			close();
-			_db.m_logger.log(Level.SEVERE, "Iterator ",e);
+			_db.m_logger.log(Logger.ERROR, "Iterator ",e);
 			return false;
 		}
 	}
@@ -161,7 +163,7 @@ abstract class DBIteratorIDImpl<T> extends DBIteratorID<T> {
 			return _id;
 		} catch (SQLException e) {
 			close();
-			_db.m_logger.log(Level.SEVERE, "Iterator ",e);
+			_db.m_logger.log(Logger.ERROR, "Iterator ",e);
 			return null;
 		}
 	}
