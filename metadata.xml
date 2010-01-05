@@ -11,4 +11,15 @@
 	<instance component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl" name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl.instance">
 		<property name="db.allowAdmin" value="true" type="boolean"/>
 	</instance>
+	<component immediate="true" classname="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl2" factory="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl2" architecture="true">
+		<callback transition="validate" method="start"/>
+		<callback transition="invalidate" method="stop"/>
+		<provides specification="fr.imag.adele.teamwork.db.ModelVersionDBService2"/>
+		<properties configurable="true">
+			<property field="m_allowAdmin" name="db.allowAdmin" type="boolean"/>
+		</properties>
+	</component>
+	<instance component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl2" name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl2.instance">
+		<property name="db.allowAdmin" value="true" type="boolean"/>
+	</instance>
 </ipojo>
