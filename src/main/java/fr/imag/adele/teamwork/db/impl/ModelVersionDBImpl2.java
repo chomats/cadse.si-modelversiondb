@@ -556,13 +556,6 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	public void start() {
-		try {
-			setConnectionURL("mysql", "localhost", 3306, "TestModelDB", "root", "5eLeDagIl3");
-		} catch (TransactionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		// Reset the connection if closed
 		for (ConnectionDef connection : m_connections.values()) {
 			openConnection(connection);
