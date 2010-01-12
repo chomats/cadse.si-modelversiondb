@@ -4972,9 +4972,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
     public int getStatementOpen() {
-        // mysql extension...
-        return ((com.mysql.jdbc.Connection)m_connection.getConnection())
-                .getActiveStatementCount();
+//        // mysql extension...
+//        return ((com.mysql.jdbc.Connection)m_connection.getConnection())
+//                .getActiveStatementCount();
+    	return 0;
     }
 
     public int load(URL url) {
