@@ -1030,6 +1030,33 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		return TableConstants.ATTR_COL_PREFIX + lastIdx;
 	}
 	
+	private void close(ResultSet rs) {
+		if (rs != null)
+			try {
+				close(rs.getStatement());
+			} catch (SQLException e) {
+				// ignore it
+			}
+	}
+
+	private void close(PStatement rs) {
+		if (rs != null)
+			try {
+                            rs.close();
+			} catch (SQLException e) {
+				// ignore it
+			}
+	}
+
+	private void close(Statement rs) {
+		if (rs != null)
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				// ignore it
+			}
+	}
+	
 	private String getCopyColumnQuery(String typeTabName, String prevColName,
 			String colName) {
 		StringBuffer sb = new StringBuffer("UPDATE ");
@@ -1510,14 +1537,17 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 
 	private boolean tableExist(String table) throws SQLException {
 		String query = "SELECT count(*) FROM " + table;
+		ResultSet rs = null;
 		try {
-			executeQueryWithScrollable(query, false).close();
+			rs = executeQueryWithScrollable(query, false);
 			return true; // the table who has the name = table exists
 		} catch (SQLException e) {
 			if (e.getErrorCode() == m_connection.getTableNotExistErrorCode())
 				return false; // the table who has the name = table doesn't exists
 			
 			throw e;
+		} finally {
+			close(rs);
 		}
 	}
 

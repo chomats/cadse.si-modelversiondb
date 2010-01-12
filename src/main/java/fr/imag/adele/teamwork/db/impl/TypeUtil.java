@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 import fr.imag.adele.teamwork.db.ModelVersionDBException;
@@ -168,7 +169,7 @@ public class TypeUtil {
 		if (value instanceof UUID) 
 			return getVarcharDef(UUID_VARCHAR_LENGTH) + UUID_TYPE_ANNO;
 		
-		if (value instanceof Integer) 
+		if (value instanceof Integer || value instanceof Enum) 
 			return SQLTypes.INT_SQL_TYPE_DEF;
 		
 		if (value instanceof Boolean) {
@@ -179,10 +180,7 @@ public class TypeUtil {
 		}
 		
 		if (value instanceof Long) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
-				return SQLTypes.BIGINT_SQL_TYPE_DEF;
-			
-			return getVarchar2Def(64);
+			return getLongType();
 		}
 		
 		if (value instanceof java.util.Date) {
@@ -202,6 +200,60 @@ public class TypeUtil {
 			return getSerSQLTypeDef();
 		
 		throw new ModelVersionDBException(value + " is not serializable.");
+	}
+	
+	public final String getSQLType(Type clazz) throws ModelVersionDBException {
+		if (clazz == null)
+			return getUndefinedSQLTypeDef();
+		
+		if (clazz == String.class) {
+			return getVarcharDef(STRING_VARCHAR_LENGTH);
+		}
+		
+		if (clazz ==  UUID.class) 
+			return getVarcharDef(UUID_VARCHAR_LENGTH) + UUID_TYPE_ANNO;
+		
+		if (clazz ==  Integer.class) 
+			return SQLTypes.INT_SQL_TYPE_DEF;
+		
+		if (clazz ==  Boolean.class) {
+			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+				return SQLTypes.BOOLEAN_SQL_TYPE_DEF;
+			
+			return getVarcharDef(1);
+		}
+		
+		if (clazz ==  Long.class) {
+			return getLongType();
+		}
+		
+		if (clazz ==  java.util.Date.class) {
+			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+				return SQLTypes.BIGINT_SQL_TYPE_DEF + JAVA_DATE_TYPE_ANNO;
+			
+			return getVarchar2Def(64) + JAVA_DATE_TYPE_ANNO;
+		}
+		
+		if (clazz ==  java.sql.Time.class) 
+			return SQLTypes.TIME_SQL_TYPE_DEF;
+		
+		if (clazz ==  java.sql.Date.class) 
+			return SQLTypes.DATE_SQL_TYPE_DEF;
+		if (clazz ==  Enum.class) 
+			return SQLTypes.INT_SQL_TYPE_DEF;
+		
+		if (clazz instanceof Class && Serializable.class.isAssignableFrom((Class<?>) clazz)) 
+			return getSerSQLTypeDef();
+		
+		throw new ModelVersionDBException(clazz + " is not serializable.");
+	}
+
+
+	public String getLongType() {
+		if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			return SQLTypes.BIGINT_SQL_TYPE_DEF;
+		
+		return getVarchar2Def(64);
 	}
 
 	/**
@@ -349,5 +401,14 @@ public class TypeUtil {
 	private String getUndefinedSQLTypeDef() {
 		return getSerSQLTypeDef() + UNDEFINED_TYPE_ANNO;
 	}
+
+
+	public String getSQLText() {
+		if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			return "TEXT CHARACTER set utf8";
+		
+		return getVarchar2Def(1024);
+	}
+
 	
 }
