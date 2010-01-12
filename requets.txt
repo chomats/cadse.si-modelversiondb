@@ -1,0 +1,120 @@
+# instance/item type
+select i.OBJ_NAME "Instance", i.OBJ_ID "id-instance", t.OBJ_NAME "Type" 
+from ALL_OBJECTS_TYPE it, OBJECTS i, OBJECTS t 
+where it.OBJ_ID = i.OBJ_ID and t.OBJ_ID = OBJ_TYPE_ID;
+
+
+select i.OBJ_NAME "SubType", t.OBJ_NAME "SuperType" 
+from ALL_TYPES_SUPER it, OBJECTS i, OBJECTS t 
+where it.SUB_TYPE_ID = i.OBJ_ID and t.OBJ_ID = SUPER_TYPE_ID;
+
+select OBJ_NAME "Name", TYPE_ID from OBJECTS, types
+where TYPE_ID = OBJ_ID;
+
+
+select OBJ_ID from OBJECTS where OBJ_cadse = 4;
+
+select OBJ_NAME, ATTRIBUTES.* from ATTRIBUTES, OBJECT where ATTR_ID = OBJ_ID;
+
+#selectionne tout les link types
+select l.* from LINKS l, ALL_OBJECTS_TYPE aot
+where aot.OBJ_ID = l.LINK_ID and aot.OBJ_TYPE_ID = 6;
+
+#selectionne tout les link types + where source ou dest (out/in)
+select l.* from LINKS l, ALL_OBJECTS_TYPE aot
+where aot.OBJ_ID = l.LINK_ID and aot.OBJ_TYPE_ID = 6 and SRC_ID = ? ou DEST_ID
+
+# heritage
+# manque extends
+select l.* from LINKS l, ALL_OBJECTS_TYPE aot
+where aot.OBJ_ID = l.LINK_ID and aot.OBJ_TYPE_ID = 6 and SRC_ID
+in (select SUPER_TYPE_ID from ALL_TYPES_SUPER where SUB_TYPE_ID=6 union select 6)
+
+
+# heritage
+# manque extends
+select l.* from LINKS l, ALL_OBJECTS_TYPE aot
+where aot.OBJ_ID = l.LINK_ID and aot.OBJ_TYPE_ID = 6 and SRC_ID
+in (select SUPER_TYPE_ID from ALL_TYPES_SUPER where SUB_TYPE_ID=6 union select 6)
+
+# all instances
+select OBJ_ID, SUPER_TYPE_ID "OBJ_TYPE_ID" from ALL_TYPES_SUPER,  OBJECTS_TYPE where SUB_TYPE_ID = OBJ_TYPE_ID
+union distinct 
+select OBJ_ID, OBJ_TYPE_ID from OBJECTS_TYPE;
+
+
+#border links
+select l.* from LINKS l, OBJECTS s, OBJECTS d
+where l.SRC_ID = s.OBJ_ID and l.DEST_ID = d.OBJ_ID and s.OBJ_CADSE != d.OBJ_CADSE;
+
+# incoming links of item-type (id 1)
+select s.OBJ_NAME "src", lt.OBJ_NAME "type" 
+from LINKS, OBJECTS s, OBJECTS lt 
+where DEST_ID = 1 and SRC_ID = s.OBJ_ID and LINK_TYPE_ID=lt.OBJ_ID;
+
+# outgoing links of link (id 11)
+select LINK_ID, d.OBJ_NAME "dest", lt.OBJ_NAME "type" 
+from LINKS, OBJECTS d, OBJECTS lt 
+where SRC_ID = 11 and DEST_ID = d.OBJ_ID and LINK_TYPE_ID=lt.OBJ_ID;
+
+# outgoing links of item-type (id 1)
+select d.OBJ_NAME "dest", lt.OBJ_NAME "type" 
+from LINKS, OBJECTS d, OBJECTS lt 
+where SRC_ID = 1 and DEST_ID = d.OBJ_ID and LINK_TYPE_ID=lt.OBJ_ID;
+
+# tous les types
+select DISTINCT * from ALL_OBJECTS_TYPE ao, OBJECTS o where ao.OBJ_ID =5142
+
+
+#
+CREATE PROCEDURE attr(IN objId INT)
+select a.ATTR_ID, t.OBJ_NAME "Type container", t.OBJ_ID "Type container id", 
+    ao.OBJ_NAME "Attribute Name", ta.OBJ_Name "Attribute Type"
+from Attributes a, Objects t, Objects ao, Objects ta
+where a.TYPE_ID = t.OBJ_ID 
+	and a.ATTR_ID = ao.OBJ_ID
+	and ta.OBJ_ID = ao.OBJ_TYPE_ID
+	and a.TYPE_ID in (select SUPER_TYPE_ID from ALL_TYPES_SUPER where SUB_TYPE_ID=objId union select objId) ;
+
+# tous les attributes d'un object Id
+select a.ATTR_ID, t.OBJ_NAME "Type container", t.OBJ_ID "Type container id", 
+    ao.OBJ_NAME "Attribute Name", ta.OBJ_Name "Attribute Type"
+from Attributes a, Objects t, Objects ao, Objects ta
+where a.TYPE_ID = t.OBJ_ID 
+	and a.ATTR_ID = ao.OBJ_ID
+	and ta.OBJ_ID = ao.OBJ_TYPE_ID
+	and a.TYPE_ID in (select SUPER_TYPE_ID from ALL_TYPES_SUPER where SUB_TYPE_ID=30 union select 30) ;
+
+select a.ATTR_ID, t.OBJ_NAME "Type container", t.OBJ_ID "Type container id", 
+    ao.OBJ_NAME "Attribute Name", ta.OBJ_Name "Attribute Type"
+from Attributes a, Objects t, Objects ao, Objects ta
+where a.TYPE_ID = t.OBJ_ID 
+	and a.ATTR_ID = ao.OBJ_ID
+	and ta.OBJ_ID = ao.OBJ_TYPE_ID
+	and a.ATTR_ID=204;
+	
+11 déc. 2009 23:28:59 fr.imag.adele.fede.workspace.si.persistence.PersistenceNew2009 readSer_6
+GRAVE: Cannot found TW-version
+
+OBJ_ID | OBJ_TYPE_ID |
+----------------------+
+| Tables_in_testmodeldb |
++-----------------------+
+| ALL_OBJECTS_TYPE      |
+| ALL_TYPES_EXT         |
+| ALL_TYPES_SUPER       |
+| ATTRIBUTES            |
+| FREE_ID               |
+| LINKS                 |
+| OBJECTS               |
+| OBJECTS_TYPE          |
+| TYPES                 |
+| TYPES_ATTR            |
+| TYPES_EXT             |
+| TYPES_SUPER           |
+| T_1                   |
+| T_2                   |
+| T_3                   |
+| T_6                   |
+| UUID_TAB              |
++-----------------------+

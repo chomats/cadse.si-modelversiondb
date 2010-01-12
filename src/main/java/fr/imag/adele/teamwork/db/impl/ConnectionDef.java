@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.felix.ipojo.util.Logger;
 
+
 import fr.imag.adele.teamwork.db.ModelVersionDBService;
 
 public class ConnectionDef {

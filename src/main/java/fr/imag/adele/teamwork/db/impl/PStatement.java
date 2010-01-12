@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,13 @@ public class PStatement {
 		m_prepare.executeUpdate();
 		for (InputStream is : m_is)
 			is.close();
+	}
+	
+	public ResultSet executeQuery() throws SQLException, IOException {
+		ResultSet ret = m_prepare.executeQuery();
+		for (InputStream is : m_is)
+			is.close();
+		return ret;
 	}
 	
 	public void close() throws SQLException {
