@@ -76,9 +76,24 @@
 						oracle.security.o3logon,
 						oracle.sql,
 						oracle.sql.converter,
-						oracle.sql.converter_xcharset
+						oracle.sql.converter_xcharset			
+    
   					
                         </Private-Package>
+                        <Import-Package>
+    org.apache.commons.logging;resolution:=optional,
+    org.jboss.resource.adapter.jdbc;resolution:=optional,
+    org.jboss.resource.adapter.jdbc.vendor;resolution:=optional,
+    sun.security.action;resolution:=optional,
+	com.mchange.v2.c3p0;resolution:=optional,
+    javax.resource;resolution:=optional,
+    javax.resource.spi;resolution:=optional,
+    javax.resource.spi.endpoint;resolution:=optional,
+    javax.resource.spi.security;resolution:=optional,
+    oracle.i18n.text;resolution:=optional,
+    oracle.i18n.text.converter;resolution:=optional,
+    oracle.ons;resolution:=optional,
+    oracle.security.pki;resolution:=optional, *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
