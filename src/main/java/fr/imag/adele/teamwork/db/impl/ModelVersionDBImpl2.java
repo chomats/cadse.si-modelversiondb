@@ -30,6 +30,8 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -92,6 +94,10 @@ import fr.imag.adele.teamwork.db.TransactionException;
 public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
     
+	private static final String CADSEDB_NAME = "cadsedb";
+
+	private static final String SA = "SA";
+
 	private static final String	LINK_TYPE_SQL_TYPE	= "{#LinkType}";
 
 	public static final int[] EMPTY_IDS = new int[0];
@@ -412,10 +418,13 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 	private Metadata	_metadata;
 
+	private BundleContext _bc;
+
 
 	public ModelVersionDBImpl2(BundleContext bc) {
 		m_logger = new Logger(bc, "Registry logger " + bc.getBundle().getBundleId(), Logger.DEBUG);
 		m_enable = true;
+		_bc = bc;
 	}
 
 
@@ -556,6 +565,14 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	public void start() {
+		//
+		try {
+			setConnectionURL(ModelVersionDBService.HSQL_IN_FILE, null, 0, _bc.getDataFile(CADSEDB_NAME).getAbsolutePath(),
+					SA, "");
+		} catch (TransactionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// Reset the connection if closed
 		for (ConnectionDef connection : m_connections.values()) {
 			openConnection(connection);
@@ -626,20 +643,24 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		}
 
 		// Oracle cannot restart a sequence
-		executeUpdate(getDropSequenceQuery(seqName));
+		executeUpdate(getDropSequenceQuery(m_connection, seqName));
 		executeCreateSequence(seqName, newStart);
 	}
 
 	public void stop() {
 		m_started = false;
-
+		
 		m_connection = null;
 		clearTransaction();
-
-		// close opened connection
-		for (ConnectionDef connection : m_connections.values()) {
-			closeConnection(connection);
+		try {
+			Connection c = DriverManager.getConnection(
+			        "jdbc:hsqldb:file:"+
+			        _bc.getDataFile(CADSEDB_NAME).getAbsolutePath()+";shutdown=true", SA, "");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		// close opened connection in clear transaction
 
 		m_connections.clear();
 	}
@@ -651,7 +672,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 				// remove sequences
 				if (!connection.isMySQL()) {
-					executeUpdate(getDropSequenceQuery(connection.getLastSeqName()));
+					executeUpdate(connection, getDropSequenceQuery(connection, connection.getLastSeqName()));
 				}
 
 				connection.close();
@@ -667,15 +688,15 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		}
 	}
 
-	private String getDropSequenceQuery(String seqName) {
+	private String getDropSequenceQuery(ConnectionDef connection, String seqName) {
 		StringBuffer querySB = new StringBuffer();
 		querySB.append("DROP SEQUENCE ");
 		querySB.append(seqName);
-		if (m_connection.isHSQL()) {
+		if (connection.isHSQL()) {
 			querySB.append(" IF EXISTS");
 		}
 
-		return getEndQuery(querySB);
+		return getEndQuery(connection, querySB);
 	}
 
 	private synchronized void clearTransaction() {
@@ -750,14 +771,17 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			throw e;
 		}
 	}
-
 	private int executeUpdate(String sql) throws SQLException {
+		return executeUpdate(m_connection, sql);
+	}
+	
+	private int executeUpdate(ConnectionDef connection, String sql) throws SQLException {
 		m_logger.log(Logger.DEBUG, "Execute sql query : " + sql);
 
 		int result = -1;
 		Statement stat = null;
 		try {
-			stat = m_connection.getConnection().createStatement();
+			stat = connection.getConnection().createStatement();
 			result = stat.executeUpdate(sql);
 		} catch (SQLException e) {
 			m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeUpdate("
@@ -1407,7 +1431,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 	private void createTypeTable(TableInfo ti) throws SQLException {
 		StringBuffer querySB = getBeginCreateTableQuery(getTypeTabName(ti.typeId));
-		addCreateTableColumnPart(querySB, PERTYPE_OBJ_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+		addCreateTableColumnPart(querySB, PERTYPE_OBJ_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 		for (TableAttribute2 ta : ti.getAttributes()) {
 			if (ta.attributeId == ID_PERTYPE_OBJ_ID_COL) continue; //special attribute
 			if (ta.getType().contains(LINK_TYPE_SQL_TYPE)) continue;
@@ -1551,12 +1575,12 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	private void addColumnListDef(StringBuffer querySB, String col1, String col2, boolean addOrder) {
-		addCreateTableColumnPart(querySB, col1, SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, col1, m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
-		addCreateTableColumnPart(querySB, col2, SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, col2, m_connection.getTypeUtil().getInteger(), false);
 		if (addOrder) {
 			addColDefSeparator(querySB);
-			addCreateTableColumnPart(querySB, ORDER_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+			addCreateTableColumnPart(querySB, ORDER_COL, m_connection.getTypeUtil().getInteger(), false);
 		}
 		addMultiplePKPart(querySB, null, true, col1, col2);
 		if (addOrder)
@@ -1568,7 +1592,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private void addColumnsDef(StringBuffer querySB, int tableId) {
 		switch (tableId) {
 			case ID_FREE_ID_TAB:
-				addCreateTableColumnPart(querySB, FREE_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+				addCreateTableColumnPart(querySB, FREE_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 				return;
 			case ID_ALL_OBJ_TYPE_TAB:
 				//addColumnListDef(querySB, ALL_OBJ_TYPE_OBJ_ID_COL, ALL_OBJ_TYPE_OBJ_TYPE_ID_COL, false);
@@ -1580,7 +1604,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				addColumnListDef(querySB, ALL_TYPE_SUPER_SUB_TYPE_ID_COL, ALL_TYPE_SUPER_SUPER_TYPE_ID_COL, false);
 				return;
 			case ID_UUID_TAB:
-				addCreateTableColumnPart(querySB, UUID_TAB_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+				addCreateTableColumnPart(querySB, UUID_TAB_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 				addColDefSeparator(querySB);
 
 				addCreateTableColumnPart(querySB, UUID_TAB_MSB_COL, m_connection.getTypeUtil().getLongType(), false);
@@ -1589,19 +1613,19 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				addMultiplePKPart(querySB, null, false, UUID_TAB_MSB_COL, UUID_TAB_LSB_COL);
 				return;
 			case ID_OBJ_TAB:
-				addCreateTableColumnPart(querySB, OBJ_OBJ_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+				addCreateTableColumnPart(querySB, OBJ_OBJ_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 				addColDefSeparator(querySB);
 				addCreateTableColumnPart(querySB, OBJ_NAME_COL, m_connection.getTypeUtil().getSQLText(), false);
 				addColDefSeparator(querySB);
 				addCreateTableColumnPart(querySB, OBJ_QNAME_COL, m_connection.getTypeUtil().getSQLText(), false);
 				addColDefSeparator(querySB);
-				addCreateTableColumnPart(querySB, OBJ_STATE_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+				addCreateTableColumnPart(querySB, OBJ_STATE_COL, m_connection.getTypeUtil().getInteger(), false);
 				addColDefSeparator(querySB);
-				addCreateTableColumnPart(querySB, OBJ_CADSE_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+				addCreateTableColumnPart(querySB, OBJ_CADSE_COL, m_connection.getTypeUtil().getInteger(), false);
 				addColDefSeparator(querySB);
-				addCreateTableColumnPart(querySB, OBJ_TYPE_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+				addCreateTableColumnPart(querySB, OBJ_TYPE_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 				addColDefSeparator(querySB);
-				addCreateTableColumnPart(querySB, OBJ_PARENT_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+				addCreateTableColumnPart(querySB, OBJ_PARENT_COL, m_connection.getTypeUtil().getInteger(), false);
 				return;
 			case ID_OBJ_TYPE_TAB:
 				addColumnListDef(querySB, OBJ_TYPE_OBJ_ID_COL, OBJ_TYPE_TYPE_ID_COL, true);
@@ -1613,19 +1637,19 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				addColumnListDef(querySB, TYPE_EXT_TYPE_ID_COL, TYPE_EXT_EXT_TYPE_ID_COL, true);
 				return;
 			case ID_TYPE_TAB:
-				addCreateTableColumnPart(querySB, TYPE_TYPE_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+				addCreateTableColumnPart(querySB, TYPE_TYPE_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 				return;
 			case ID_GEN_TAB:
 				addCreateTableColumnPart(querySB, GEN_TYPE_COL, TypeUtil
 						.getVarcharDef(GEN_TYPE_LENGTH), true);
 				addColDefSeparator(querySB);
 				addCreateTableColumnPart(querySB, GEN_LAST_IDX_COL,
-						SQLTypes.INT_SQL_TYPE_DEF, false);
+						m_connection.getTypeUtil().getInteger(), false);
 				return;
 			case ID_ATTR_TAB:
-				addCreateTableColumnPart(querySB, ATTR_TYPE_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+				addCreateTableColumnPart(querySB, ATTR_TYPE_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 				addColDefSeparator(querySB);
-				addCreateTableColumnPart(querySB, ATTR_ATTR_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, true);
+				addCreateTableColumnPart(querySB, ATTR_ATTR_ID_COL, m_connection.getTypeUtil().getInteger(), true);
 				addColDefSeparator(querySB);
 				addCreateTableColumnPart(querySB, ATTR_SQL_TYPE_COL, TypeUtil
 						.getVarcharDef(35), false);
@@ -1644,18 +1668,18 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 
 	private void addLinkTableColDef(StringBuffer querySB) {
-		addCreateTableColumnPart(querySB, LINK_LINK_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, LINK_LINK_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
-		addCreateTableColumnPart(querySB, LINK_TYPE_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, LINK_TYPE_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
-		addCreateTableColumnPart(querySB, LINK_SRC_ID_COL,  SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, LINK_SRC_ID_COL,  m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
-		addCreateTableColumnPart(querySB, LINK_DEST_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, LINK_DEST_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
-		addCreateTableColumnPart(querySB, ORDER_COL,	    SQLTypes.INT_SQL_TYPE_DEF, false);
+		addCreateTableColumnPart(querySB, ORDER_COL,	    m_connection.getTypeUtil().getInteger(), false);
 	}
 
-	private static void addMultiplePKPart(StringBuffer querySB, String pkName, boolean primarykey, String... columns) {
+	private void addMultiplePKPart(StringBuffer querySB, String pkName, boolean primarykey, String... columns) {
 		querySB.append(", CONSTRAINT ");
 		if (pkName == null) {
 			for (int i = 0; i < columns.length; i++) {
@@ -1667,7 +1691,15 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		} else {
 			querySB.append(pkName);
 		}
-		querySB.append(primarykey?" PRIMARY":" UNIQUE").append(" KEY(");
+		if (primarykey) {
+			querySB.append(" PRIMARY KEY(");
+		}
+		else {
+			if (m_connection.isHSQL())
+				querySB.append(" UNIQUE(");
+			else 
+				querySB.append(" UNIQUE KEY(");
+		}
 		for (int i = 0; i < columns.length; i++) {
 			querySB.append(columns[i]);
 			if (i != columns.length - 1)
@@ -2029,6 +2061,13 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		querySB.append(" = ? ");
 	}
 
+	private String getEndQuery(ConnectionDef connection, StringBuffer querySB) {
+		if (connection != null && !connection.isOracle())
+			querySB.append(";");
+
+		return querySB.toString();
+	}
+	
 	private String getEndQuery(StringBuffer querySB) {
 		if (m_connection != null && !m_connection.isOracle())
 			querySB.append(";");
@@ -4804,11 +4843,11 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 //			return tableName;
 //		StringBuffer querySB = getBeginCreateTableQuery(tableName);
 //
-//		addCreateTableColumnPart(querySB, ATTR_ATTR_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+//		addCreateTableColumnPart(querySB, ATTR_ATTR_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 //		addColDefSeparator(querySB);
-//		addCreateTableColumnPart(querySB, OBJ_OBJ_ID_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+//		addCreateTableColumnPart(querySB, OBJ_OBJ_ID_COL, m_connection.getTypeUtil().getInteger(), false);
 //		addColDefSeparator(querySB);
-//		addCreateTableColumnPart(querySB, ORDER_COL, SQLTypes.INT_SQL_TYPE_DEF, false);
+//		addCreateTableColumnPart(querySB, ORDER_COL, m_connection.getTypeUtil().getInteger(), false);
 //		addColDefSeparator(querySB);
 //		addCreateTableColumnPart(querySB, "VALUE", sqlType, true);
 //		addMultiplePKPart(querySB, null, true, ATTR_ATTR_ID_COL, OBJ_OBJ_ID_COL, ORDER_COL);
