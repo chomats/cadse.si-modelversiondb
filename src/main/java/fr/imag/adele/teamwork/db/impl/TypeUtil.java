@@ -59,14 +59,14 @@ public class TypeUtil {
 	 */
 	private String m_objectSQLType;
 	
-	private String m_baseType;
+	private ConnectionDef _connect;
 	
-	public TypeUtil(String baseType) {
-		m_baseType = baseType;
+	public TypeUtil(ConnectionDef connect) {
+		_connect = connect;
 		
-		if (ModelVersionDBService.MYSQL_TYPE.equals(baseType))
+		if (connect.isMySQL())
 			m_objectSQLType = SQLTypes.BLOB_SQL_TYPE_DEF;
-		else if (ModelVersionDBService.ORACLE_TYPE.equals(baseType))
+		else if (connect.isOracle())
 			m_objectSQLType = SQLTypes.BLOB_SQL_TYPE_DEF;
 		else
 			m_objectSQLType = SQLTypes.LONGVARBIN_SQL_TYPE_DEF;
@@ -82,7 +82,7 @@ public class TypeUtil {
 			return "NULL";
 		
 		if (value instanceof Boolean) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			if (!_connect.isOracle())
 				return value.toString();
 			
 			Boolean boolVal = (Boolean) value;
@@ -135,7 +135,7 @@ public class TypeUtil {
 	}
 	
 	public final String getBooleanDef() {
-		if (ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+		if (_connect.isOracle())
 			return getCharDef(1);
 		
 		return SQLTypes.BOOLEAN_SQL_TYPE_DEF;
@@ -173,7 +173,7 @@ public class TypeUtil {
 			return SQLTypes.INT_SQL_TYPE_DEF;
 		
 		if (value instanceof Boolean) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			if (!_connect.isOracle())
 				return SQLTypes.BOOLEAN_SQL_TYPE_DEF;
 			
 			return getVarcharDef(1);
@@ -184,7 +184,7 @@ public class TypeUtil {
 		}
 		
 		if (value instanceof java.util.Date) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			if (!_connect.isOracle())
 				return SQLTypes.BIGINT_SQL_TYPE_DEF + JAVA_DATE_TYPE_ANNO;
 			
 			return getVarchar2Def(64) + JAVA_DATE_TYPE_ANNO;
@@ -217,7 +217,7 @@ public class TypeUtil {
 			return SQLTypes.INT_SQL_TYPE_DEF;
 		
 		if (clazz ==  Boolean.class) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			if (!_connect.isOracle())
 				return SQLTypes.BOOLEAN_SQL_TYPE_DEF;
 			
 			return getVarcharDef(1);
@@ -228,7 +228,7 @@ public class TypeUtil {
 		}
 		
 		if (clazz ==  java.util.Date.class) {
-			if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+			if (!_connect.isOracle())
 				return SQLTypes.BIGINT_SQL_TYPE_DEF + JAVA_DATE_TYPE_ANNO;
 			
 			return getVarchar2Def(64) + JAVA_DATE_TYPE_ANNO;
@@ -250,9 +250,8 @@ public class TypeUtil {
 
 
 	public String getLongType() {
-		if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+		if (_connect.isMySQL() || _connect.isHSQL())
 			return SQLTypes.BIGINT_SQL_TYPE_DEF;
-		
 		return getVarchar2Def(64);
 	}
 
@@ -315,7 +314,14 @@ public class TypeUtil {
 	}
 
 	public static boolean isInt(String type) {
-		return SQLTypes.INT_SQL_TYPE_DEF.equals(type);
+		return SQLTypes.INT_SQL_TYPE_DEF.equals(type) || "INTEGER".equals(type);
+	}
+	
+	public String getInteger() {
+		if (_connect.isHSQL())
+			return "INTEGER";
+		
+		return SQLTypes.INT_SQL_TYPE_DEF;
 	}
 
 	public static boolean isUUID(String type) {
@@ -404,11 +410,14 @@ public class TypeUtil {
 
 
 	public String getSQLText() {
-		if (!ModelVersionDBService.ORACLE_TYPE.equals(m_baseType))
+		if (!_connect.isOracle())
 			return "TEXT CHARACTER set utf8";
 		
 		return getVarchar2Def(1024);
 	}
+
+
+	
 
 	
 }

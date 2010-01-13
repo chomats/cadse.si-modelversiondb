@@ -18,7 +18,7 @@
  */
 package fr.imag.adele.teamwork.db.impl;
 
-import static fr.imag.adele.teamwork.db.ModelVersionDBService.HSQL_IN_MEMORY_TYPE;
+import static fr.imag.adele.teamwork.db.ModelVersionDBService.*;
 import static fr.imag.adele.teamwork.db.ModelVersionDBService.HSQL_TYPE;
 import static fr.imag.adele.teamwork.db.ModelVersionDBService.MYSQL_TYPE;
 import static fr.imag.adele.teamwork.db.ModelVersionDBService.ORACLE_TYPE;
@@ -113,6 +113,8 @@ public class ConnectionDef {
 		if (jdbcType.equals("hsqldb")) {
 			if ((urlParts.length > 2) && (urlParts[2].equalsIgnoreCase("mem")))
 				baseType = ModelVersionDBService.HSQL_IN_MEMORY_TYPE;
+			else if ((urlParts.length > 2) && (urlParts[2].equalsIgnoreCase("file")))
+				baseType = ModelVersionDBService.HSQL_IN_FILE;
 			else
 				baseType = ModelVersionDBService.HSQL_TYPE;
 		}
@@ -139,7 +141,9 @@ public class ConnectionDef {
 			urlSB.append("oracle");
 		
 		urlSB.append(":");
-		if (isHSQL() && !isInMemory()) {
+		if (isHSQL() && isInFile()) {
+			urlSB.append("file:");
+		} else if (isHSQL() && !isInMemory()) {
 			urlSB.append("hsql:");
 		} else if (isHSQL() && isInMemory()) {
 			urlSB.append("mem:");
@@ -147,7 +151,7 @@ public class ConnectionDef {
 			urlSB.append("thin:@");
 		}
 		
-		if (!isInMemory()) {
+		if (!isInMemory() && !isInFile()) {
 			urlSB.append("//");
 			
 			if (m_baseHost != null)
@@ -168,15 +172,9 @@ public class ConnectionDef {
 	}
 	
 	private void checkConnectionConfig() {
-		m_typeUtil = new TypeUtil(m_baseType);
+		m_typeUtil = new TypeUtil(this);
 		
-		if (isHSQL() && !isInMemory()) {
-			m_tableNotExistErrorCode = -22;
-			m_supportMultiRequest = true;
-			return;
-		}
-		
-		if (isHSQL() && isInMemory()) {
+		if (isHSQL()) {
 			m_tableNotExistErrorCode = -22;
 			m_supportMultiRequest = true;
 			return;
@@ -199,6 +197,10 @@ public class ConnectionDef {
 	
 	private boolean isInMemory() {
 		return HSQL_IN_MEMORY_TYPE.equalsIgnoreCase(m_baseType);
+	}
+	
+	private boolean isInFile() {
+		return HSQL_IN_FILE.equalsIgnoreCase(m_baseType);
 	}
 
 	public String getLogin() {
@@ -230,7 +232,8 @@ public class ConnectionDef {
 	
 	public boolean isHSQL() {
 		return HSQL_TYPE.equalsIgnoreCase(m_baseType) ||
-			HSQL_IN_MEMORY_TYPE.equalsIgnoreCase(m_baseType);
+			HSQL_IN_MEMORY_TYPE.equalsIgnoreCase(m_baseType)||
+			HSQL_IN_FILE.equalsIgnoreCase(m_baseType);
 	}
 	
 	public boolean isMySQL() {
