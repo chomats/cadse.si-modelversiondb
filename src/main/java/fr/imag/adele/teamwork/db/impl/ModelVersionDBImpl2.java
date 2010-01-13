@@ -2107,21 +2107,21 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			checkTypeParam(destId);
 		}
 		if (linkId!=linkTypeId) {
-			if (!isLink(linkTypeId)) {
-				throw new IllegalArgumentException("Not a link type: "+linkTypeId);
-			}
-			int typeSourceId = getLinkSrc(linkTypeId);
-			int typeDestId = getLinkDest(linkTypeId);
-			if (!isCompatibleLink(sourceId, typeSourceId)) {
-				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
-				throw new IllegalArgumentException(
-						NLS.bind("Source link {0} is not compatible with source type {1}", sourceId, typeSourceId));
-			}
-			if (!isCompatibleLink(destId, typeDestId)) {
-				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
-				throw new IllegalArgumentException(
-						NLS.bind("Destination link {0} is not compatible with destination type {1}.", destId, typeDestId));
-			}
+			//if (!isLink(linkTypeId)) {
+			//	throw new IllegalArgumentException("Not a link type: "+linkTypeId);
+			//}
+			//int typeSourceId = getLinkSrc(linkTypeId);
+			//int typeDestId = getLinkDest(linkTypeId);
+//			if (!isCompatibleLink(sourceId, typeSourceId)) {
+//				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
+//				throw new IllegalArgumentException(
+//						NLS.bind("Source link {0} is not compatible with source type {1}", sourceId, typeSourceId));
+//			}
+//			if (!isCompatibleLink(destId, typeDestId)) {
+//				m_logger.log(Logger.ERROR,"LinkTypeId:"+linkTypeId+"("+typeSourceId+"-->"+typeDestId+")");
+//				throw new IllegalArgumentException(
+//						NLS.bind("Destination link {0} is not compatible with destination type {1}.", destId, typeDestId));
+//			}
 		}
 		beginInternalTransaction();
 
@@ -2289,8 +2289,9 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		checkLinkIdParam(linkId);
 
 		if (!linkExists(linkId))
-			throw new IllegalArgumentException(
-					"There is no link with id = " + linkId + " in database");
+			//throw new IllegalArgumentException(
+			//		"There is no link with id = " + linkId + " in database");
+			return -1;
 
 		return getIdForLink_(LINK_DEST_ID_COL, LINK_LINK_ID_COL, linkId);
 	}
@@ -2375,8 +2376,9 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		checkLinkIdParam(linkId);
 
 		if (!linkExists(linkId))
-			throw new IllegalArgumentException(
-					"There is no link with id = " + linkId + " in database");
+//			throw new IllegalArgumentException(
+//					"There is no link with id = " + linkId + " in database");
+			return -1;
 
 		return getIdForLink_(LINK_SRC_ID_COL, LINK_LINK_ID_COL, linkId);
 	}
@@ -3231,8 +3233,8 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private void checkTypeParam(int typeId) throws ModelVersionDBException {
 		if (typeId == -1)
 			throw new IllegalArgumentException("Type id cannot be null.");
-		if (!(objExists(typeId) && isType(typeId)))
-			throw new IllegalArgumentException("Type id not exist.");
+		//if (!(objExists(typeId) && isType(typeId)))
+		//	throw new IllegalArgumentException("Type id not exist.");
 
 	}
 
@@ -3250,15 +3252,15 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private void checkDestIdParam(int destId) throws ModelVersionDBException {
 		if (destId == -1)
 			throw new IllegalArgumentException("Source object id cannot be null.");
-		if (!objExists(destId))
-			throw new IllegalArgumentException("Source object id cannot be null.");
+		//if (!objExists(destId))
+		//	throw new IllegalArgumentException("Source object id cannot be null.");
 	}
 
 	private void checkSrcIdParam(int srcId) throws ModelVersionDBException {
 		if (srcId == -1)
 			throw new IllegalArgumentException("Destination object id cannot be null.");
-		if (!objExists(srcId))
-			throw new IllegalArgumentException("Source object id cannot be null.");
+		//if (!objExists(srcId))
+		//	throw new IllegalArgumentException("Source object id cannot be null.");
 	}
 
 	private int[] getTypes() throws ModelVersionDBException {
