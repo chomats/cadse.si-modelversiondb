@@ -422,7 +422,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 
 	public ModelVersionDBImpl2(BundleContext bc) {
-		m_logger = new Logger(bc, "Registry logger " + bc.getBundle().getBundleId(), Logger.DEBUG);
+		m_logger = new Logger(bc, "Registry logger " + bc.getBundle().getBundleId(), Logger.WARNING);
 		m_enable = true;
 		_bc = bc;
 	}
