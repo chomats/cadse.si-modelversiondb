@@ -1574,7 +1574,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		}
 	}
 
-	private void addColumnListDef(StringBuffer querySB, String col1, String col2, boolean addOrder) {
+	private void addColumnListDef(StringBuffer querySB, String tab, String col1, String col2, boolean addOrder) {
 		addCreateTableColumnPart(querySB, col1, m_connection.getTypeUtil().getInteger(), false);
 		addColDefSeparator(querySB);
 		addCreateTableColumnPart(querySB, col2, m_connection.getTypeUtil().getInteger(), false);
@@ -1582,9 +1582,9 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			addColDefSeparator(querySB);
 			addCreateTableColumnPart(querySB, ORDER_COL, m_connection.getTypeUtil().getInteger(), false);
 		}
-		addMultiplePKPart(querySB, null, true, col1, col2);
+		addMultiplePKPart(querySB, tab+"_"+col1+"_"+col2, true, col1, col2);
 		if (addOrder)
-			addMultiplePKPart(querySB, null, false, col1, ORDER_COL);
+			addMultiplePKPart(querySB, tab+"_"+col1+"_"+ORDER_COL, false, col1, ORDER_COL);
 	}
 
 
@@ -1598,10 +1598,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				//addColumnListDef(querySB, ALL_OBJ_TYPE_OBJ_ID_COL, ALL_OBJ_TYPE_OBJ_TYPE_ID_COL, false);
 				return;
 			case ID_ALL_EXT_TAB:
-				addColumnListDef(querySB, ALL_EXT_TYPE_ID_COL, ALL_EXT_EXT_TYPE_ID_COL, false);
+				addColumnListDef(querySB, getTypeTabName(tableId), ALL_EXT_TYPE_ID_COL, ALL_EXT_EXT_TYPE_ID_COL, false);
 				return;
 			case ID_ALL_TYPE_SUPER_TAB:
-				addColumnListDef(querySB, ALL_TYPE_SUPER_SUB_TYPE_ID_COL, ALL_TYPE_SUPER_SUPER_TYPE_ID_COL, false);
+				addColumnListDef(querySB, getTypeTabName(tableId), ALL_TYPE_SUPER_SUB_TYPE_ID_COL, ALL_TYPE_SUPER_SUPER_TYPE_ID_COL, false);
 				return;
 			case ID_UUID_TAB:
 				addCreateTableColumnPart(querySB, UUID_TAB_ID_COL, m_connection.getTypeUtil().getInteger(), true);
@@ -1628,13 +1628,13 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 				addCreateTableColumnPart(querySB, OBJ_PARENT_COL, m_connection.getTypeUtil().getInteger(), false);
 				return;
 			case ID_OBJ_TYPE_TAB:
-				addColumnListDef(querySB, OBJ_TYPE_OBJ_ID_COL, OBJ_TYPE_TYPE_ID_COL, true);
+				addColumnListDef(querySB, getTypeTabName(tableId), OBJ_TYPE_OBJ_ID_COL, OBJ_TYPE_TYPE_ID_COL, true);
 				return;
 			case ID_TYPE_SUPER_TAB:
-				addColumnListDef(querySB, TYPE_SUPER_SUB_TYPE_ID_COL, TYPE_SUPER_SUPER_TYPE_ID_COL, true);
+				addColumnListDef(querySB, getTypeTabName(tableId), TYPE_SUPER_SUB_TYPE_ID_COL, TYPE_SUPER_SUPER_TYPE_ID_COL, true);
 				return;
 			case ID_TYPE_EXT_TAB:
-				addColumnListDef(querySB, TYPE_EXT_TYPE_ID_COL, TYPE_EXT_EXT_TYPE_ID_COL, true);
+				addColumnListDef(querySB, getTypeTabName(tableId), TYPE_EXT_TYPE_ID_COL, TYPE_EXT_EXT_TYPE_ID_COL, true);
 				return;
 			case ID_TYPE_TAB:
 				addCreateTableColumnPart(querySB, TYPE_TYPE_ID_COL, m_connection.getTypeUtil().getInteger(), true);
