@@ -963,24 +963,24 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		beginInternalTransaction();
 
 		try {
-			if (superTypeId != null) {
-				for (int i = 0; i < superTypeId.length; i++) {
-					if (!isType(superTypeId[i]))
-						throw new IllegalArgumentException("type not exists: "+superTypeId[i]);
-				}
-			}
-			if (extendedBy != null) {
-				for (int i = 0; i < extendedBy.length; i++) {
-					if (!isType(extendedBy[i]))
-						throw new IllegalArgumentException("type not exists: "+extendedBy[i]);
-				}
-			}
-			if (attributes != null) {
-				for (int i = 0; i < attributes.length; i++) {
-					if (!isAttributeDefinition(attributes[i]))
-						throw new IllegalArgumentException("attribute definition not exists: "+attributes[i]);
-				}
-			}
+//			if (superTypeId != null) {
+////				for (int i = 0; i < superTypeId.length; i++) {
+////					if (!isType(superTypeId[i]))
+////						throw new IllegalArgumentException("type not exists: "+superTypeId[i]);
+////				}
+//			}
+//			if (extendedBy != null) {
+//				for (int i = 0; i < extendedBy.length; i++) {
+//					if (!isType(extendedBy[i]))
+//						throw new IllegalArgumentException("type not exists: "+extendedBy[i]);
+//				}
+//			}
+//			if (attributes != null) {
+//				for (int i = 0; i < attributes.length; i++) {
+//					if (!isAttributeDefinition(attributes[i]))
+//						throw new IllegalArgumentException("attribute definition not exists: "+attributes[i]);
+//				}
+//			}
 
 
 			if (isType(objectId)) {
@@ -3241,10 +3241,10 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private void checkTypeParam(int[] typeId, int objectId) throws ModelVersionDBException {
 		if (typeId == null || typeId.length == 0)
 			throw new IllegalArgumentException("Type id cannot be null.");
-		for (int id : typeId) {
-			if (objectId != id && !objExists(id) && !isType(id))
-				throw new IllegalArgumentException("Type id not exists");
-		}
+//		for (int id : typeId) {
+//			if (objectId != id && !objExists(id) && !isType(id))
+//				throw new IllegalArgumentException("Type id not exists");
+//		}
 	}
 
 

@@ -410,6 +410,10 @@ public class TypeUtil {
 
 
 	public String getSQLText() {
+		if (_connect.isHSQL()) {
+			return "LONGVARCHAR";
+		}
+		
 		if (!_connect.isOracle())
 			return "TEXT CHARACTER set utf8";
 		
