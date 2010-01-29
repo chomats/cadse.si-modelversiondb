@@ -414,8 +414,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					ResultSet.CONCUR_READ_ONLY);
 			return stmt_scrollable.executeQuery(sql);
 		} catch (SQLException e) {
-			m_logger.log(Logger.DEBUG, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
-							+ sql + ") : " + e.getMessage(), e);
+//			m_logger.log(Logger.DEBUG, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
+//							+ sql + ") : " + e.getMessage(), e);
 			if (printError) {
 				m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeQuery("
 							+ sql + ") : " + e.getMessage(), e);
@@ -626,9 +626,15 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		
 		Savepoint savepoint = m_connection.popLastSavepoint();
 		try {
-			m_logger.log(Logger.DEBUG, "Commit savepoint " + savepoint.getSavepointName());
-			if (!m_connection.isOracle())
-				m_connection.getConnection().releaseSavepoint(savepoint);
+			String savepointName = savepoint.getSavepointName();
+			m_logger.log(Logger.DEBUG, "Commit savepoint " + savepointName);
+			if (!m_connection.isOracle()) {
+				try {
+					m_connection.getConnection().releaseSavepoint(savepoint);
+				} catch (Exception e) {
+					m_logger.log(Logger.ERROR, "Release of savepoint " + savepointName + " failed.");
+				}
+			}
 		} catch (SQLException e) {
 			m_logger.log(Logger.ERROR, "Commit failed : ", e);
 			rollbackToSavepoint(savepoint);
