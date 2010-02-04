@@ -326,17 +326,17 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			querySB.append(m_connection.getTypeUtil().getSQLValue(start));
 		}
 		
-		executeUpdate(getEndQuery(querySB));
+		executeUpdate(getEndQuery(querySB, m_connection), m_connection);
 	}
 
 	private void executeResetSequence(String seqName, int newStart) throws SQLException {
 		if (!m_connection.isOracle()) {
-			executeUpdate(getResetSequenceQuery(seqName, newStart));
+			executeUpdate(getResetSequenceQuery(seqName, newStart), m_connection);
 			return;
 		}
 		
 		// Oracle cannot restart a sequence
-		executeUpdate(getDropSequenceQuery(seqName));
+		executeUpdate(getDropSequenceQuery(seqName, m_connection), m_connection);
 		executeCreateSequence(seqName, newStart);
 	}
 
@@ -361,7 +361,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				
 				// remove sequences
 				if (!connection.isMySQL()) {
-					executeUpdate(getDropSequenceQuery(connection.getLastSeqName()));
+					executeUpdate(getDropSequenceQuery(connection.getLastSeqName(), connection), connection);
 				}
 				
 				connection.close();
@@ -377,15 +377,15 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		}
 	}
 
-	private String getDropSequenceQuery(String seqName) {
+	private String getDropSequenceQuery(String seqName, ConnectionDef connection) {
 		StringBuffer querySB = new StringBuffer();
 		querySB.append("DROP SEQUENCE ");
 		querySB.append(seqName);
-		if (m_connection.isHSQL()) {
+		if (connection.isHSQL()) {
 			querySB.append(" IF EXISTS"); 
 		}
 		
-		return getEndQuery(querySB);
+		return getEndQuery(querySB, connection);
 	}
 
 	private synchronized void clearTransaction() {
@@ -460,13 +460,13 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		} 
 	}
 
-	private int executeUpdate(String sql) throws SQLException {
+	private int executeUpdate(String sql, ConnectionDef connection) throws SQLException {
 		m_logger.log(Logger.DEBUG, "Execute sql query : " + sql);
 		
 		int result = -1;
 		Statement stat = null;
 		try {
-			stat = m_connection.getConnection().createStatement();
+			stat = connection.getConnection().createStatement();
 			result = stat.executeUpdate(sql);
 		} catch (SQLException e) {
 			m_logger.log(Logger.ERROR, "[ERROR IN DATABASE ACCESS] A SQLException occurs in executeUpdate("
@@ -558,7 +558,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					GEN_LAST_IDX_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, GEN_TYPE_COL, idxType);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 			boolean hasLastSavePopintIdx = rs.next();
@@ -572,7 +572,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 						GEN_LAST_IDX_COL);
 				addWherePart(querySB);
 				addEqualPart(querySB, GEN_TYPE_COL, idxType);
-				query = getEndQuery(querySB);
+				query = getEndQuery(querySB, m_connection);
 				rs = executeQuery(query);
 				boolean hasEntry = rs.next();
 				if (!hasEntry)
@@ -588,7 +588,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					new Assignment(GEN_LAST_IDX_COL));
 			addWherePart(querySB);
 			addEqualPart(querySB, GEN_TYPE_COL, idxType);
-			query = getEndQuery(querySB);
+			query = getEndQuery(querySB, m_connection);
 
 			PStatement ps = createPreparedStatement(query);
 			ps.getStatement().setInt(1, new_idx);
@@ -695,7 +695,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, PERTYPE_REV_COL, rev.getRev());
 		}
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = executeQuery(query);
 		boolean rowExist = rs.next();
 		rs.close();
@@ -708,7 +708,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			query = getInsertQuery(typeTabName, 
 					new Assignment(PERTYPE_OBJ_ID_COL, rev.getId(), m_connection.getTypeUtil()),
 					new Assignment(PERTYPE_REV_COL, rev.getRev(), m_connection.getTypeUtil()));
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 		}
 		
 		if ((stateMap == null) || (stateMap.isEmpty())) {
@@ -757,7 +757,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, PERTYPE_REV_COL, rev.getRev());
 		}
-		query = getEndQuery(querySB);
+		query = getEndQuery(querySB, m_connection);
 		PStatement prepare = createPreparedStatement(query);
 		for (int i = 0; i < values.size(); i++) {
 			Object value = values.get(i);
@@ -878,7 +878,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				ATTR_ATTR_NAME_COL, ATTR_ATTR_TYPE_COL, ATTR_ATTR_TAB_NAME_COL);
 		addWherePart(querySB);
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = executeQuery(query);
 
 		Map<String, String> savedAttrMap = new HashMap<String, String>(); /*
@@ -983,7 +983,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				String colName = attrColMap.get(attr);
 				
 				query = getAddColumnQuery(getTypeTabName(typeId), colName, attrType);
-				executeUpdate(query);
+				executeUpdate(query, m_connection);
 			}
 		} else {
 			// create table for objects of type typeId
@@ -1003,7 +1003,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		String query;
 		// Add a new column for attribute values
 		query = getAddColumnQuery(getTypeTabName(typeId), colName, newType);
-		executeUpdate(query);
+		executeUpdate(query, m_connection);
 		
 		// Update associations between attribute names and columns
 		StringBuffer querySB = getBeginUpdateQuery(ATTR_TAB, 
@@ -1012,7 +1012,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
 		addAndPart(querySB);
 		addEqualPart(querySB, ATTR_ATTR_TAB_NAME_COL, prevColName);
-		query = getEndQuery(querySB);
+		query = getEndQuery(querySB, m_connection);
 		PStatement ps = createPreparedStatement(query);
 		ps.getStatement().setString(1, colName);
 		ps.getStatement().setString(2, newType);
@@ -1025,11 +1025,11 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		
 		// Copy previous values into the new column
 		query = getCopyColumnQuery(getTypeTabName(typeId), prevColName, colName);
-		executeUpdate(query);
+		executeUpdate(query, m_connection);
 		
 		// Remove unused column which represented attribute values
 		query = getRemoveColumnQuery(getTypeTabName(typeId), prevColName);
-		executeUpdate(query);
+		executeUpdate(query, m_connection);
 	}
 
 	private String getAttrColName(int lastIdx) {
@@ -1072,7 +1072,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		sb.append(" = ");
 		sb.append(prevColName);
 		
-		return getEndQuery(sb);
+		return getEndQuery(sb, m_connection);
 	}
 
 	private String getAddColumnQuery(String tableName, String colName,
@@ -1104,7 +1104,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			sb.append(attributeType);
 		}
 		
-		return getEndQuery(sb);
+		return getEndQuery(sb, m_connection);
 	}
 
 	private void createTypeTable(String typeTabName,
@@ -1130,7 +1130,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addMultiplePKPart(querySB, "PK_" + typeTabName, PERTYPE_OBJ_ID_COL, PERTYPE_REV_COL);
 		String query = getEndCreateTableQuery(querySB);
 
-		executeUpdate(query);
+		executeUpdate(query, m_connection);
 	}
 
 	private Map<String, String> getAttributes(Map<String, Object> stateMap)
@@ -1173,7 +1173,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					new Assignment(TYPE_LINK_SRC_VERSION_SPEC_COL, DEFAULT_SRC_VERSION_SPECIFIC_FLAG, m_connection.getTypeUtil()), 
 					new Assignment(TYPE_LINK_DEST_VERSION_SPEC_COL, DEFAULT_DEST_VERSION_SPECIFIC_FLAG, m_connection.getTypeUtil()));
 			
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 			return typeTabName;
 		} catch (SQLException e) {
 			throw new ModelVersionDBException(e);
@@ -1184,7 +1184,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		StringBuffer querySB = getBeginSelectQuery(false, TYPE_TAB, TYPE_TAB_NAME_COL);
 		addWherePart(querySB);
 		addEqualPart(querySB, TYPE_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 
 		try {
 			ResultSet rs = executeQuery(query);
@@ -1242,7 +1242,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					TYPE_TYPE_ID_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, TYPE_TYPE_ID_COL, typeId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 			boolean typeExist = rs.next();
@@ -1262,7 +1262,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addColumnsDef(querySB, tableName);
 			String query = getEndCreateTableQuery(querySB);
 
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 
 			addDefaultEntries(tableName);
 		}
@@ -1273,17 +1273,17 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			String query = getInsertQuery(tableName, 
 					new Assignment(	GEN_TYPE_COL, TableConstants.TYPE_TYPE_NAME, m_connection.getTypeUtil()), 
 					new Assignment(GEN_LAST_IDX_COL, 0, m_connection.getTypeUtil()));
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 			
 			query = getInsertQuery(tableName, new Assignment(
 					GEN_TYPE_COL, TableConstants.TYPE_SAVEPOINT_NAME, m_connection.getTypeUtil()), 
 					new Assignment(GEN_LAST_IDX_COL, 0, m_connection.getTypeUtil()));
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 			
 			query = getInsertQuery(tableName, new Assignment(
 					GEN_TYPE_COL, TableConstants.TYPE_CLIENT_NAME, m_connection.getTypeUtil()), 
 					new Assignment(GEN_LAST_IDX_COL, 0, m_connection.getTypeUtil()));
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 		}
 	}
 
@@ -1405,7 +1405,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				new Assignment(OBJ_TYPE_ID_COL, typeId, m_connection.getTypeUtil()),
 				new Assignment(OBJ_IS_TYPE_COL, isType, m_connection.getTypeUtil()));
 
-		executeUpdate(query);
+		executeUpdate(query, m_connection);
 		
 		return new Revision(objectId, typeId, FIRST_REVISION);
 	}
@@ -1434,7 +1434,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		sb.append(valuesSB.toString());
 		sb.append(")");
 
-		return getEndQuery(sb);
+		return getEndQuery(sb, m_connection);
 	}
 	
 	private static StringBuffer getInsertQuery(String tableName, String... colToSets) {
@@ -1538,7 +1538,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 	private String getEndCreateTableQuery(StringBuffer querySB) {
 		querySB.append(")");
 
-		return getEndQuery(querySB);
+		return getEndQuery(querySB, m_connection);
 	}
 
 	private boolean tableExist(String table) throws SQLException {
@@ -1587,15 +1587,15 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginDeleteQuery(typeTabName);
 			addWherePart(querySB);
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objectId);
-			String query = getEndQuery(querySB);
-			executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 
 			// delete object id in objects table
 			querySB = getBeginDeleteQuery(OBJ_TAB);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_OBJ_ID_COL, objectId);
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 
 			commitInternalTransaction();
 		} catch (SQLException e) {
@@ -1630,7 +1630,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addAndPart(querySB);
 				addEqualPart(querySB, objRevCol, objRev);
 			}
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -1655,7 +1655,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(false, OBJ_TAB, "count(*)");
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_TYPE_ID_COL, typeId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -1681,31 +1681,31 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		StringBuffer querySB = getBeginDeleteQuery(ATTR_TAB);
 		addWherePart(querySB);
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
-		executeUpdate(query);
+		String query = getEndQuery(querySB, m_connection);
+		executeUpdate(query, m_connection);
 
 		if (isLinkType) {
 			// delete links of the specified type
 			querySB = getBeginDeleteQuery(LINK_TAB);
 			addWherePart(querySB);
 			addEqualPart(querySB, LINK_TYPE_ID_COL, typeId);
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 		} else {
 			// delete objects of the specified type
 			querySB = getBeginDeleteQuery(OBJ_TAB);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_TYPE_ID_COL, typeId);
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 		}
 
 		// delete the table association of the specified type
 		querySB = getBeginDeleteQuery(TYPE_TAB);
 		addWherePart(querySB);
 		addEqualPart(querySB, TYPE_TYPE_ID_COL, typeId);
-		query = getEndQuery(querySB);
-		executeUpdate(query);
+		query = getEndQuery(querySB, m_connection);
+		executeUpdate(query, m_connection);
 	}
 
 	private final static StringBuffer getBeginDeleteQuery(String tableName) {
@@ -1729,7 +1729,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(false, OBJ_TAB, OBJ_TYPE_ID_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_OBJ_ID_COL, objectId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -1748,7 +1748,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 
 	private void deleteTable(String tableName) throws SQLException {
 		try {
-			executeUpdate(getDropTableQuery(tableName));
+			executeUpdate(getDropTableQuery(tableName), m_connection);
 		} catch (SQLException e) {
 			if (m_connection.isOracle() && (e.getErrorCode() == m_connection.getTableNotExistErrorCode()))
 				return;
@@ -1764,7 +1764,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				querySB.append(" IF EXISTS ");
 		querySB.append(tableName);
 		
-		return getEndQuery(querySB);
+		return getEndQuery(querySB, m_connection);
 	}
 
 	public boolean objExists(UUID objectId) throws ModelVersionDBException {
@@ -1776,7 +1776,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(true, OBJ_TAB, OBJ_OBJ_ID_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_OBJ_ID_COL, objectId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query, false);
 
@@ -1830,7 +1830,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objectId);
 			addAndPart(querySB);
 			addEqualPart(querySB, PERTYPE_REV_COL, rev);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query, false);
 
@@ -1883,8 +1883,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		querySB.append(" = ? ");
 	}
 
-	private String getEndQuery(StringBuffer querySB) {
-		if (!m_connection.isOracle())
+	private String getEndQuery(StringBuffer querySB, ConnectionDef connection) {
+		if (!connection.isOracle())
 			querySB.append(";");
 
 		return querySB.toString();
@@ -1907,7 +1907,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				return new HashSet<UUID>();
 			
 			StringBuffer querySB = getBeginSelectQuery(false, OBJ_TAB, OBJ_OBJ_ID_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -1941,7 +1941,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(false, OBJ_TAB, OBJ_OBJ_ID_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_TYPE_ID_COL, typeId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -2004,7 +2004,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(false, TYPE_TAB, TYPE_LINK_SRC_VERSION_SPEC_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, TYPE_TYPE_ID_COL, typeId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 			rs = executeQuery(query);
 			boolean isVersionSpec = DEFAULT_VERSION_SPECIFIC_FLAG;
 			if (rs.next()) {
@@ -2026,7 +2026,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_SRC_ID_COL, srcId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_DEST_ID_COL, destId);
-			query = getEndQuery(querySB);
+			query = getEndQuery(querySB, m_connection);
 			rs = executeQuery(query);
 			UUID linkId = null;
 			if (rs.next()) {
@@ -2068,14 +2068,14 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			querySB.append(") ");
 			if (isMySQL)
 				querySB.append("AUTO_INCREMENT = " + m_connection.getTypeUtil().getSQLValue(firstNewRev));
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 			
 			// 2. copy links and compute new revision numbers into temporary table
 			querySB = new StringBuffer();
 			selectLinksToUpdate(querySB, typeId, srcId, srcRev, destId, destRev,
 					new String[] { "count(*)" });
-			rs = executeQuery(getEndQuery(querySB));
+			rs = executeQuery(getEndQuery(querySB, m_connection));
 			int linkToUpdateNb = 0;
 			if (rs.next())
 				linkToUpdateNb = rs.getInt(1);
@@ -2104,8 +2104,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					addQuerySeparator(querySB);
 				else {
 					// execute simple query with MySQL
-					query = getEndQuery(querySB);
-					executeUpdate(query);
+					query = getEndQuery(querySB, m_connection);
+					executeUpdate(query, m_connection);
 					querySB = new StringBuffer();
 				}
 
@@ -2143,8 +2143,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					addQuerySeparator(querySB);
 				} else {
 					// execute simple query with MySQL
-					query = getEndQuery(querySB);
-					executeUpdate(query);
+					query = getEndQuery(querySB, m_connection);
+					executeUpdate(query, m_connection);
 					querySB = new StringBuffer();
 				}
 
@@ -2165,8 +2165,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 								+ newLinkRevQuerySB.toString() + " )", true,
 								m_connection.getTypeUtil())));
 
-				query = getEndQuery(querySB);
-				executeUpdate(query);
+				query = getEndQuery(querySB, m_connection);
+				executeUpdate(query, m_connection);
 
 				// 4. store new link states
 				if (linkExists(linkId, firstNewRev)) {
@@ -2211,12 +2211,12 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					addAndPart(querySB);
 					querySB.append("T." + PERTYPE_REV_COL + " > "
 							+ m_connection.getTypeUtil().getSQLValue(firstNewRev));
-					executeUpdate(getEndQuery(querySB));
+					executeUpdate(getEndQuery(querySB, m_connection), m_connection);
 				}
 			}
 			
 			// 5. delete temporary table
-			executeUpdate(getDropTableQuery(newRevTable));
+			executeUpdate(getDropTableQuery(newRevTable), m_connection);
 			
 			/*
 			 *  II - Create not already existing links
@@ -2273,8 +2273,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 							+ m_connection.getTypeUtil().getSQLValue(firstNewRev));
 				
 				// execute simple query with MySQL
-				query = getEndQuery(querySB);
-				executeUpdate(query);
+				query = getEndQuery(querySB, m_connection);
+				executeUpdate(query, m_connection);
 				querySB = new StringBuffer();
 				
 				// insert into <newRevTable> 
@@ -2297,8 +2297,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				querySB.append(getAllSrcRevJoinDestRev(srcId, srcRev, destId, destRev, 
 						srcTypeTableName, destTypeTableName));
 				querySB.append(") ");
-				query = getEndQuery(querySB);
-				executeUpdate(query);
+				query = getEndQuery(querySB, m_connection);
+				executeUpdate(query, m_connection);
 				querySB = new StringBuffer();
 			}
 			
@@ -2372,13 +2372,13 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				querySB.append(")");
 			}
 			
-			executeUpdate(getEndQuery(querySB));
+			executeUpdate(getEndQuery(querySB, m_connection), m_connection);
 			querySB = new StringBuffer();
 			
 			if (isMySQL) {
 				// Workaround for MySQL
 				// delete temporary table
-				executeUpdate(getDropTableQuery(newRevTable));
+				executeUpdate(getDropTableQuery(newRevTable), m_connection);
 			}
 			
 			// 2. create link states in corresponding table for this link type
@@ -2444,7 +2444,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				
 				// );
 				querySB.append(" )");
-				executeUpdate(getEndQuery(querySB));
+				executeUpdate(getEndQuery(querySB, m_connection), m_connection);
 			}
 			
 			Revision rev = new Revision(linkId, typeId, getLastLinkRevNb(linkId));
@@ -2548,7 +2548,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
 		}
-		query = getEndQuery(querySB);
+		query = getEndQuery(querySB, m_connection);
 		rs = executeQuery(query);
 		if (rs.next()) {
 			lastOrder = rs.getInt(1);
@@ -2598,8 +2598,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			
 			StringBuffer querySB = getBeginUpdateQuery(TYPE_TAB, 
 					new Assignment(versionSpecCol, isVersionSpecific));	
-			String query = getEndQuery(querySB);
-		    executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+		    executeUpdate(query, m_connection);
 		    
 		    commitInternalTransaction();
 		} catch (Exception e) {
@@ -2634,8 +2634,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
 				addAndPart(querySB);
 				addEqualPart(querySB, ATTR_ATTR_NAME_COL, attrName);
-				String query = getEndQuery(querySB);
-				executeUpdate(query);
+				String query = getEndQuery(querySB, m_connection);
+				executeUpdate(query, m_connection);
 				
 			} catch (IllegalArgumentException e) {
 				// This attribute doesn't already exist
@@ -2652,7 +2652,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 						new Assignment(ATTR_ATTR_TYPE_COL, attrType), 
 						new Assignment(ATTR_ATTR_TAB_NAME_COL, newColName),
 						new Assignment(ATTR_VERSION_SPEC_COL, isVersionSpecific));
-				executeUpdate(query);
+				executeUpdate(query, m_connection);
 				
 				// add new column in type table
 				String typeTableName = checkTypeTableExist(typeId);
@@ -2662,7 +2662,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					createTypeTable(typeTableName, attrTotalMap);
 				} else {
 					query = getAddColumnQuery(typeTableName, newColName, attrType);
-					executeUpdate(query);
+					executeUpdate(query, m_connection);
 				}
 			}
 			
@@ -2752,7 +2752,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					querySB.append(getDropTableQuery(viewName));
 				else
 					querySB.append(getDropViewQuery(viewName));
-				executeUpdate(getEndQuery(querySB));
+				executeUpdate(getEndQuery(querySB, m_connection), m_connection);
 			}
 			
 			commitInternalTransaction();
@@ -2767,7 +2767,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			throws SQLException {
 		if (isMySQL) {
 			// execute simple query with MySQL
-			executeUpdate(querySB.toString());
+			executeUpdate(querySB.toString(), m_connection);
 			querySB = new StringBuffer();
 		}
 		return querySB;
@@ -2815,7 +2815,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(false, tableName, maxFunction(PERTYPE_REV_COL));
 			addWherePart(querySB);
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objectId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 			
 			rs = executeQuery(query);
 			if (rs.next())
@@ -2852,7 +2852,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		StringBuffer querySB = getBeginSelectQuery(false, LINK_TAB, maxFunction(LINK_REV_COL));
 		addWherePart(querySB);
 		addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		
 		int lastRev = 0;
 		ResultSet rs = null;
@@ -2893,7 +2893,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addWherePart(querySB);
 		addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
 		addOrderByPart(querySB, LINK_REV_COL);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		
 		List<Integer> revisions = new ArrayList<Integer>();
 		ResultSet rs = null;
@@ -2942,7 +2942,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addWherePart(querySB);
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objectId);
 			addOrderByPart(querySB, PERTYPE_REV_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 			
 			rs = executeQuery(query);
 			while (rs.next()) {
@@ -2994,15 +2994,15 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginDeleteQuery(typeTabName);
 			addWherePart(querySB);
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, linkId);
-			String query = getEndQuery(querySB);
-			executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 
 			// delete object id in objects table
 			querySB = getBeginDeleteQuery(LINK_TAB);
 			addWherePart(querySB);
 			addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 
 			// Note that we don't remove link source or destination objects
 
@@ -3039,7 +3039,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_SRC_ID_COL, srcId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -3082,7 +3082,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(true, LINK_TAB, selColName);
 			addWherePart(querySB);
 			addEqualPart(querySB, equalColName, equalId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -3166,7 +3166,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objId);
 		addAndPart(querySB);
 		addEqualPart(querySB, PERTYPE_REV_COL, rev);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		ResultSet rs = null;
@@ -3276,7 +3276,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				ATTR_ATTR_NAME_COL, ATTR_ATTR_TYPE_COL, ATTR_ATTR_TAB_NAME_COL);
 		addWherePart(querySB);
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = null;
 		try {
 			rs = executeQuery(query);
@@ -3356,7 +3356,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objId);
 		addAndPart(querySB);
 		addEqualPart(querySB, PERTYPE_REV_COL, rev);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = null;
 		try {
 			rs = executeQuery(query);
@@ -3386,7 +3386,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
 		addAndPart(querySB);
 		addEqualPart(querySB, ATTR_ATTR_NAME_COL, attr);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		String attrType;
 		String colName;
 		boolean isVersionSpec;
@@ -3493,7 +3493,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(true, LINK_TAB, "*");
 			addWherePart(querySB);
 			addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -3535,7 +3535,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_REV_COL, rev);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -3585,7 +3585,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addAndPart(querySB);
 				addEqualPart(querySB, LINK_DEST_REV_COL, destRev);
 			}
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			rs = executeQuery(query);
 
@@ -3702,11 +3702,11 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					new Assignment(ATTR_ATTR_TYPE_COL, attrType), 
 					new Assignment(ATTR_ATTR_TAB_NAME_COL, newColName),
 					new Assignment(ATTR_VERSION_SPEC_COL, attrVSFlag));
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 			
 			// add new column in type table
 			query = getAddColumnQuery(getTypeTabName(typeId), newColName, attrType);
-			executeUpdate(query);
+			executeUpdate(query, m_connection);
 			
 			attrJO = new Attribute(attrType, newColName, attrVSFlag);
 		}
@@ -3741,7 +3741,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, PERTYPE_REV_COL, rev.getRev());
 		}
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		PStatement ps = createPreparedStatement(query);
 		try {
 			setValue(ps, 1, value);
@@ -3764,7 +3764,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				ATTR_ATTR_NAME_COL, ATTR_ATTR_TYPE_COL, ATTR_ATTR_TAB_NAME_COL);
 		addWherePart(querySB);
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = null;
 		try {
 			rs = executeQuery(query);
@@ -3840,7 +3840,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				ATTR_ATTR_NAME_COL, ATTR_VERSION_SPEC_COL);
 		addWherePart(querySB);
 		addEqualPart(querySB, ATTR_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 		ResultSet rs = executeQuery(query);
 		
 		Map<String, Boolean> attrVSMap = new HashMap<String, Boolean>();
@@ -3930,7 +3930,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_DEST_ID_COL, destId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_DEST_REV_COL, destRev);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -3964,7 +3964,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addEqualPart(querySB, revCol, rev);
 			}
 			addOrderByPart(querySB, LINK_SRC_ID_COL, LINK_ORDER_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -4019,7 +4019,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addEqualPart(querySB, sEqualColName, sEqualId);
 			}
 			addOrderByPart(querySB, LINK_SRC_ID_COL, LINK_TYPE_ID_COL, LINK_ORDER_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -4053,7 +4053,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addWherePart(querySB);
 			addEqualPart(querySB, LINK_TYPE_ID_COL, typeId);
 			addOrderByPart(querySB, LINK_SRC_ID_COL, LINK_ORDER_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -4162,7 +4162,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			} else {
 				addOrderByPart(querySB, PERTYPE_OBJ_ID_COL, PERTYPE_REV_COL);
 			}
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 			ResultSet rs = executeQuery(query);
 
 			while (rs.next()) {
@@ -4274,7 +4274,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				String attrCol = attrJO.getColumn();
 				StringBuffer querySB = getBeginSelectQuery(true, tableName, 
 						PERTYPE_OBJ_ID_COL, PERTYPE_REV_COL, attrCol);
-				String query = getEndQuery(querySB);
+				String query = getEndQuery(querySB, m_connection);
 				ResultSet rs = executeQuery(query);
 				while (rs.next()) {
 					Object attrVal = getSerializableObject(rs, attrCol);
@@ -4316,7 +4316,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				querySB.append("T_LAST_REV.LAST_REV = " + tableName + "." + PERTYPE_REV_COL);
 			}
 			addOrderByPart(querySB, PERTYPE_OBJ_ID_COL, PERTYPE_REV_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 			ResultSet rs = executeQuery(query);
 
 			while (rs.next()) {
@@ -4384,7 +4384,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_DEST_ID_COL, destId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 			
@@ -4422,7 +4422,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				return new HashSet<UUID>();
 			
 			StringBuffer querySB = getBeginSelectQuery(false, TYPE_TAB, TYPE_TYPE_ID_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -4536,7 +4536,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			} 
 			addOrderByPart(querySB, LINK_SRC_REV_COL, LINK_ORDER_COL);
 			
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 
@@ -4583,7 +4583,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
 			addOrderByPart(querySB, LINK_ORDER_COL);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
 
 			ResultSet rs = executeQuery(query);
 			if (rs.next()) {
@@ -4652,7 +4652,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addAndPart(querySB);
 		addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
 		addOrderByPart(querySB, LINK_ORDER_COL);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 
 		ResultSet rs = executeQuery(query);
 
@@ -4696,7 +4696,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, LINK_SRC_ID_COL, srcId);
 		addAndPart(querySB);
 		addEqualPart(querySB, LINK_SRC_REV_COL, srcRev);
-		query = getEndQuery(querySB);
+		query = getEndQuery(querySB, m_connection);
 		PStatement prepare = createPreparedStatement(query);
 		for (int i = 0; i < newLinkIds.size(); i++) {
 			setValue(prepare, 1, i + 1);
@@ -4830,7 +4830,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, PERTYPE_OBJ_ID_COL, objectId);
 			addAndPart(querySB);
 			addEqualPart(querySB, PERTYPE_REV_COL, fromRev);
-			executeUpdate(querySB.toString());
+			executeUpdate(querySB.toString(), m_connection);
 			
 			/*
 			 * clone links
@@ -4861,7 +4861,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_SRC_ID_COL, objectId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_SRC_REV_COL, fromRev);
-			executeUpdate(querySB.toString());
+			executeUpdate(querySB.toString(), m_connection);
 			
 			// retrieve all link types to clone
 			Set<UUID> linkTypeIds = getOutgoingLinkTypes(objectId, fromRev);
@@ -4950,7 +4950,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		addEqualPart(querySB, "L_SRC_REV." + LINK_SRC_ID_COL, objectId);
 		addAndPart(querySB);
 		addEqualPart(querySB, "L_SRC_REV." + LINK_SRC_REV_COL, fromRev);
-		executeUpdate(querySB.toString());
+		executeUpdate(querySB.toString(), m_connection);
 	}
 
 	private List<String> getLinkTableColumns() {
@@ -5035,8 +5035,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addAndPart(querySB);
 			addEqualPart(querySB, "L." + LINK_REV_COL, "T." + PERTYPE_REV_COL);
 			querySB.append(")");
-			String query = getEndQuery(querySB);
-			executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 			
 			// delete links in links table
 			querySB = getBeginDeleteQuery(LINK_TAB);
@@ -5052,8 +5052,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addAndPart(querySB);
 				addEqualPart(querySB, LINK_DEST_REV_COL, destRev);
 			}
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 
 			commitInternalTransaction();
 		} catch (SQLException e) {
@@ -5129,8 +5129,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			
 			// );
 			querySB.append(")");
-			String query = getEndQuery(querySB);
-			executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 			
 			// delete links in LINKS table
 			querySB = getBeginDeleteQuery(LINK_TAB);
@@ -5142,8 +5142,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				addAndPart(querySB);
 				addEqualPart(querySB, objRevCol, objRev);
 			}
-			query = getEndQuery(querySB);
-			executeUpdate(query);
+			query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 			
 			commitInternalTransaction();
 		} catch (SQLException e) {
@@ -5188,8 +5188,8 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			addEqualPart(querySB, LINK_LINK_ID_COL, linkId);
 			addAndPart(querySB);
 			addEqualPart(querySB, LINK_REV_COL, linkRev);
-			String query = getEndQuery(querySB);
-			executeUpdate(query);
+			String query = getEndQuery(querySB, m_connection);
+			executeUpdate(query, m_connection);
 			
 			commitInternalTransaction();
 		} catch (SQLException e) {
@@ -5207,7 +5207,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 			StringBuffer querySB = getBeginSelectQuery(true, OBJ_TAB, OBJ_IS_TYPE_COL);
 			addWherePart(querySB);
 			addEqualPart(querySB, OBJ_OBJ_ID_COL, objectId);
-			String query = getEndQuery(querySB);
+			String query = getEndQuery(querySB, m_connection);
  
 			ResultSet rs = executeQuery(query, false);
 
@@ -5259,7 +5259,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 						new Assignment(ATTR_ATTR_TYPE_COL, attrType), 
 						new Assignment(ATTR_ATTR_TAB_NAME_COL, newColName),
 						new Assignment(ATTR_VERSION_SPEC_COL, isVersionSpecific));
-				executeUpdate(query);
+				executeUpdate(query, m_connection);
 				
 				// add new column in type table
 				String typeTableName = checkTypeTableExist(typeId);
@@ -5269,7 +5269,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 					createTypeTable(typeTableName, attrTotalMap);
 				} else {
 					query = getAddColumnQuery(typeTableName, newColName, attrType);
-					executeUpdate(query);
+					executeUpdate(query, m_connection);
 				}
 			}
 			
@@ -5318,7 +5318,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		StringBuffer querySB = getBeginSelectQuery(false, TYPE_TAB, verSpecCol);
 		addWherePart(querySB);
 		addEqualPart(querySB, TYPE_TYPE_ID_COL, typeId);
-		String query = getEndQuery(querySB);
+		String query = getEndQuery(querySB, m_connection);
 
 		try {
 			ResultSet rs = executeQuery(query);
