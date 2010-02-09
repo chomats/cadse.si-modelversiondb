@@ -1962,9 +1962,15 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 				}
 		}
 	}
-
+	
 	public Revision addLink(final UUID typeId, final UUID srcId, int srcRev, final UUID destId,
 			int destRev, Map<String, Object> stateMap)
+			throws ModelVersionDBException {
+		return addLink(typeId, srcId, srcRev, destId, destRev, stateMap, false);
+	}
+
+	public Revision addLink(final UUID typeId, final UUID srcId, int srcRev, final UUID destId,
+			int destRev, Map<String, Object> stateMap, boolean forceDestExists)
 			throws ModelVersionDBException {
 		checkConnection();
 		
@@ -1983,8 +1989,9 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		if (((srcRev == ModelVersionDBService.ALL) && (!objExists(srcId))) ||
 			((srcRev != ModelVersionDBService.ALL) && (!objExists(srcId, srcRev))))
 			throw new IllegalArgumentException("Source with id = " + srcId + " does not exist.");
-		if (((destRev == ModelVersionDBService.ALL) && (!objExists(destId))) ||
-			((destRev != ModelVersionDBService.ALL) && (!objExists(destId, destRev))))
+		if (!forceDestExists && 
+			(((destRev == ModelVersionDBService.ALL) && (!objExists(destId))) ||
+			((destRev != ModelVersionDBService.ALL) && (!objExists(destId, destRev)))))
 				throw new IllegalArgumentException("Destination with id = " + destId + " does not exist.");
 		
 		beginInternalTransaction();
