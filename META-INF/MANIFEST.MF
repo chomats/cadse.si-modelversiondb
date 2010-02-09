@@ -1,0 +1,52 @@
+Manifest-Version: 1.0
+Private-Package: org.hsqldb.resources,org.hsqldb.types,oracle.sql.conv
+ erter,org.hsqldb.jdbc,com.mysql.jdbc.log,oracle.net.TNSAddress,com.my
+ sql.jdbc.jdbc2.optional,oracle.jdbc.internal,oracle.jdbc.connector,or
+ acle.net.aso,org.hsqldb.lib.java,org.hsqldb,oracle.sql,org.hsqldb.uti
+ l,oracle.net.resolver,oracle.jdbc.xa,oracle.jdbc.xa.client,oracle.net
+ .mesg,com.mysql.jdbc.interceptors,org.hsqldb.scriptio,oracle.core.lmx
+ ,oracle.net.ano,oracle.core.lvf,com.mysql.jdbc.integration.jboss,orac
+ le.jdbc.driver,org.hsqldb.lib,com.mysql.jdbc.exceptions,oracle.jdbc.p
+ ool,oracle.jpub.runtime,oracle.sql.converter_xcharset,com.mysql.jdbc,
+ org.hsqldb.store,oracle.net.nt,oracle.net.ns,org.hsqldb.index,org.hsq
+ ldb.persist,oracle.net.jndi,oracle.jdbc.oracore,org.gjt.mm.mysql,com.
+ mysql.jdbc.integration.c3p0,com.mysql.jdbc.profiler,org.hsqldb.rowio,
+ com.mysql.jdbc.util,fr.imag.adele.teamwork.db.impl,oracle.jdbc.util,c
+ om.mysql.jdbc.exceptions.jdbc4,oracle.net.nl,oracle.jdbc.rowset,oracl
+ e.jdbc.oci,oracle.net.nl.mesg,oracle.jdbc,oracle.security.o3logon
+Built-By: chomats
+Tool: Bnd-0.0.357
+Bundle-Name: fr.imag.adele.cadse.si.ModelVersionDB
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: Adele/LIG/ Grenoble University, France
+DynamicImport-Package: *
+Build-Jdk: 1.6.0_17
+Bundle-Version: 2.3.0.SNAPSHOT
+Ipojo-auto-start: true
+Bundle-ManifestVersion: 2
+Bundle-Description: Service implementation of a multi version database
+  for models using HSQLDB or MySQL
+Import-Package: bak.pcj,bak.pcj.list,bak.pcj.map,bak.pcj.set,com.mchan
+ ge.v2.c3p0;resolution:=optional,fr.imag.adele.cadse.util,fr.imag.adel
+ e.teamwork.db;version="2.3",javax.naming,javax.naming.directory,javax
+ .naming.spi,javax.net,javax.net.ssl,javax.resource;resolution:=option
+ al,javax.resource.spi;resolution:=optional,javax.resource.spi.endpoin
+ t;resolution:=optional,javax.resource.spi.security;resolution:=option
+ al,javax.security.auth,javax.security.cert,javax.servlet,javax.servle
+ t.http,javax.sql,javax.sql.rowset,javax.sql.rowset.spi,javax.swing,ja
+ vax.swing.border,javax.swing.event,javax.swing.table,javax.swing.tree
+ ,javax.transaction.xa;version="1.1",javax.xml.parsers,javax.xml.strea
+ m,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.sax
+ ,javax.xml.transform.stax,javax.xml.transform.stream,oracle.i18n.text
+ ;resolution:=optional,oracle.i18n.text.converter;resolution:=optional
+ ,oracle.ons;resolution:=optional,oracle.security.pki;resolution:=opti
+ onal,org.apache.commons.logging;resolution:=optional;version="1.0",or
+ g.apache.felix.ipojo.util;version="1.4",org.apache.log4j,org.jboss.re
+ source.adapter.jdbc;resolution:=optional,org.jboss.resource.adapter.j
+ dbc.vendor;resolution:=optional,org.osgi.framework;version="1.3",org.
+ w3c.dom,org.xml.sax,org.xml.sax.helpers,sun.security.action;resolutio
+ n:=optional
+Bundle-SymbolicName: fr.imag.adele.cadse.si.ModelVersionDB;singleton:=
+ true
+Bundle-DocURL: http://www-adele.imag.fr/
+
