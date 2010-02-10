@@ -39,17 +39,6 @@
   						org.hsqldb.resources,
   						org.hsqldb.persist,
   						org.hsqldb.util,
-  						com.mysql.jdbc,
-						com.mysql.jdbc.exceptions,
-						com.mysql.jdbc.exceptions.jdbc4,
-						com.mysql.jdbc.integration.c3p0,
-						com.mysql.jdbc.integration.jboss,
-						com.mysql.jdbc.interceptors,
-						com.mysql.jdbc.jdbc2.optional,
-						com.mysql.jdbc.log,
-						com.mysql.jdbc.profiler,
-						com.mysql.jdbc.util,
-						org.gjt.mm.mysql,
 						oracle.core.lmx,
 						oracle.core.lvf,
 						oracle.jdbc,
@@ -81,7 +70,16 @@
     
   					
                         </Private-Package>
-                        <Import-Package>
+                        <Import-Package>com.mysql.jdbc,
+						com.mysql.jdbc.exceptions,
+						com.mysql.jdbc.exceptions.jdbc4,
+						com.mysql.jdbc.interceptors,
+						com.mysql.jdbc.jdbc2.optional,
+						com.mysql.jdbc.log,
+						com.mysql.jdbc.profiler,
+						com.mysql.jdbc.util,
+						org.gjt.mm.mysql,
+                        javax.transaction.xa;resolution:=optional,
     org.apache.commons.logging;resolution:=optional,
     org.jboss.resource.adapter.jdbc;resolution:=optional,
     org.jboss.resource.adapter.jdbc.vendor;resolution:=optional,
@@ -107,10 +105,11 @@
   		<version>1.8.0.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>mysql</groupId>
-  		<artifactId>mysql-connector-java</artifactId>
-  		<version>5.1.6</version>
-  	</dependency>
+			<groupId>mysql.bundle</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.11</version>
+			<scope>runtime</scope>
+		</dependency>
   	<dependency>
   		<groupId>com.oracle</groupId>
   		<artifactId>ojdbc14</artifactId>
