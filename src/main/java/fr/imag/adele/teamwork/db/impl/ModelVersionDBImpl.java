@@ -393,7 +393,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		
 		// close all opened connections except current one
 		for (ConnectionDef connection : m_connections.values()) {
-			if ((m_connection == null) || 
+			if ((m_connection == null) || m_connection.getConnection() == null ||
 					!m_connection.getConnection().equals(connection.getConnection()))
 				closeConnection(connection);
 		}
