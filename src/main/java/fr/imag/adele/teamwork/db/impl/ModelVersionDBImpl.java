@@ -41,6 +41,7 @@ import org.apache.felix.ipojo.util.Logger;
 import org.osgi.framework.BundleContext;
 
 
+import fr.imag.adele.teamwork.db.DBConnectionException;
 import fr.imag.adele.teamwork.db.ModelVersionDBException;
 import fr.imag.adele.teamwork.db.ModelVersionDBService;
 import fr.imag.adele.teamwork.db.Revision;
@@ -161,24 +162,30 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		}
 	}
 	
-	public void setConnectionURL(String url) {
+	public void setConnectionURL(String url) throws DBConnectionException {
 		setConnectionURLInternal(url, null, null);
 	}
 	
-	public void setConnectionURL(String url, String login, String password) {
+	public void setConnectionURL(String url, String login, String password) throws DBConnectionException {
 		checkLoginAndPassword(login, password);
 		setConnectionURLInternal(url, login, password);
 	}
 
 	private synchronized void setConnectionURLInternal(String url, String login,
-			String password) {
+			String password) throws DBConnectionException {
 		if (m_started && isConnected() && !hasTransaction()) {
 			closeConnection(m_connection);
 		}
 		
-		setCurrentConnection(new ConnectionDef(url, login, password, m_logger));
+		ConnectionDef connectionDef = new ConnectionDef(url, login, password, m_logger);
+		setCurrentConnection(connectionDef);
 		
-		configureConnection();
+		try {
+			configureConnection();
+		} catch (DBConnectionException e) {
+			removeCurrentConnection(connectionDef);
+			throw e;
+		}
 	}
 
 	private void setCurrentConnection(ConnectionDef connectionDef) {
@@ -190,14 +197,21 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		m_connection = connectionDef;
 		m_connections.put(url, m_connection);
 	}
+	
+	private void removeCurrentConnection(ConnectionDef connectionDef) {
+		m_connection = null;
+		
+		if (connectionDef != null)
+			m_connections.remove(connectionDef.getURL());
+	}
 
 	public void setConnectionURL(String dbType, String host, int port,
-			String dbName) throws TransactionException {
+			String dbName) throws TransactionException, DBConnectionException {
 		setConnectionURLInternal(dbType, host, port, dbName, null, null);
 	}
 
 	public void setConnectionURL(String dbType, String host, int port,
-			String dbName, String login, String password) throws TransactionException {
+			String dbName, String login, String password) throws TransactionException, DBConnectionException {
 		checkLoginAndPassword(login, password);
 		setConnectionURLInternal(dbType, host, port, dbName, login, password);
 	}
@@ -225,21 +239,27 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 	}
 
 	private synchronized void setConnectionURLInternal(String dbType, String host,
-			int port, String dbName, String login, String password) throws TransactionException {
+			int port, String dbName, String login, String password) throws TransactionException, DBConnectionException {
 		if (m_started && isConnected() && !hasTransaction())
 			closeConnection(m_connection);
 		
-		setCurrentConnection(new ConnectionDef(dbType, host, port, dbName, login, password, m_logger));
+		ConnectionDef connectionDef = new ConnectionDef(dbType, host, port, dbName, login, password, m_logger);
+		setCurrentConnection(connectionDef);
 		
-		configureConnection();
+		try {
+			configureConnection();
+		} catch (DBConnectionException e) {
+			removeCurrentConnection(connectionDef);
+			throw e;
+		}
 	}
 
-	private void configureConnection() {
+	private void configureConnection() throws DBConnectionException {
 
 		try {
 			loadDriverClass();
 		} catch (IllegalStateException e) {
-			throw new IllegalArgumentException("Unsupported database type:" + m_connection.getBaseType(), e);
+			throw new DBConnectionException("Unsupported database type:" + m_connection.getBaseType(), m_connection.getURL(), e);
 		}
 		
 		if (m_started)
@@ -268,13 +288,18 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 
 		// Reset the connection if closed
 		for (ConnectionDef connection : m_connections.values()) {
-			openConnection(connection);
+			try {
+				openConnection(connection);
+			} catch (DBConnectionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		m_started = true;
 	}
 
-	private void openConnection(ConnectionDef connection) {
+	private void openConnection(ConnectionDef connection) throws DBConnectionException {
 		connection.openConnection();
 		initConnection(connection);
 		try {

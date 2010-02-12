@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.felix.ipojo.util.Logger;
 
 
+import fr.imag.adele.teamwork.db.DBConnectionException;
 import fr.imag.adele.teamwork.db.ModelVersionDBService;
 
 public class ConnectionDef {
@@ -273,7 +274,7 @@ public class ConnectionDef {
 		return null;
 	}
 	
-	void openConnection() {
+	void openConnection() throws DBConnectionException {
 		try {
 			if ((m_connection == null) || (m_connection.isClosed())) {
 				if (m_login == null) {
@@ -289,8 +290,10 @@ public class ConnectionDef {
 				m_connection.setAutoCommit(false);
 			}
 		} catch (SQLException e) {
-			m_logger.log(Logger.ERROR, "Cannot get the connection to database using URL " + 
-					m_url + ": " + e.getMessage(), e);
+			String errorMsg = "Cannot get the connection to database using URL " + 
+					m_url + ": " + e.getMessage();
+			m_logger.log(Logger.ERROR, errorMsg, e);
+			throw new DBConnectionException(errorMsg, getURL(), e);
 		}
 	}
 
