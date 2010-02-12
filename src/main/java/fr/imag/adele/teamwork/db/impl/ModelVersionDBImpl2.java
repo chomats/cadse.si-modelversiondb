@@ -64,6 +64,7 @@ import fr.imag.adele.cadse.core.transaction.delta.ItemDelta;
 import fr.imag.adele.cadse.core.transaction.LogicalWorkspaceTransaction;
 import fr.imag.adele.cadse.util.ArraysUtil;
 import fr.imag.adele.cadse.util.NLS;
+import fr.imag.adele.teamwork.db.DBConnectionException;
 import fr.imag.adele.teamwork.db.ID3;
 import fr.imag.adele.teamwork.db.LinkInfo;
 import fr.imag.adele.teamwork.db.LinkInfoPlus;
@@ -582,7 +583,12 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	}
 
 	private void openConnection(ConnectionDef connection) {
-		connection.openConnection();
+		try {
+			connection.openConnection();
+		} catch (DBConnectionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		initConnection(connection);
 		try {
 			initSavepointPrefix();
