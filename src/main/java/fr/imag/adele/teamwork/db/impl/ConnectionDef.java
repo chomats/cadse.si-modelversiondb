@@ -71,7 +71,7 @@ public class ConnectionDef {
 	private static AtomicInteger m_lastSavepointNb = new AtomicInteger(0);
 	private ThreadLocalSavepointName m_savepoints = new ThreadLocalSavepointName();
 	
-	public ConnectionDef(String url, String login, String password, Logger logger) {
+	public ConnectionDef(String url, String login, String password, Logger logger) throws DBConnectionException {
 		m_logger = logger;
 		
 		m_url = url;
@@ -85,12 +85,12 @@ public class ConnectionDef {
 		checkConnectionConfig();
 	}
 	
-	public ConnectionDef(String url, Logger logger) {
+	public ConnectionDef(String url, Logger logger) throws DBConnectionException {
 		this(url, null, null, logger);
 	}
 	
 	public ConnectionDef(String dbType, String host, int port, String dbName,
-			String login, String password, Logger logger) {
+			String login, String password, Logger logger) throws DBConnectionException {
 		m_logger = logger;
 		
 		m_login = login;
@@ -172,7 +172,7 @@ public class ConnectionDef {
 		return urlSB.toString();
 	}
 	
-	private void checkConnectionConfig() {
+	private void checkConnectionConfig() throws DBConnectionException {
 		m_typeUtil = new TypeUtil(this);
 		
 		if (isHSQL()) {
@@ -193,7 +193,7 @@ public class ConnectionDef {
 			return;
 		}
 		
-		throw new IllegalStateException("Unsupported database.");
+		throw new DBConnectionException("Unsupported database.", m_url, null);
 	}
 	
 	private boolean isInMemory() {
