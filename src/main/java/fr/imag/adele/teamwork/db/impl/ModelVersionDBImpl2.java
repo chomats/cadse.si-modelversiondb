@@ -479,8 +479,12 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			closeConnection(m_connection);
 		}
 
-		setCurrentConnection(new ConnectionDef(url, login, password, m_logger));
-		configureConnection();
+		try {
+			setCurrentConnection(new ConnectionDef(url, login, password, m_logger));
+			configureConnection();
+		} catch (DBConnectionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void setCurrentConnection(ConnectionDef connectionDef) {
@@ -531,7 +535,11 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		if (m_started && isConnected() && !hasTransaction())
 			closeConnection(m_connection);
 
-		setCurrentConnection(new ConnectionDef(dbType, host, port, dbName, login, password, m_logger));
+		try {
+			setCurrentConnection(new ConnectionDef(dbType, host, port, dbName, login, password, m_logger));
+		} catch (DBConnectionException e) {
+			e.printStackTrace();
+		}
 
 		configureConnection();
 	}
