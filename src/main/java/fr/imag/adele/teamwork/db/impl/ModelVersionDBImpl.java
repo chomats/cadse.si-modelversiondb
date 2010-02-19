@@ -2014,7 +2014,7 @@ public class ModelVersionDBImpl implements ModelVersionDBService {
 		if (((srcRev == ModelVersionDBService.ALL) && (!objExists(srcId))) ||
 			((srcRev != ModelVersionDBService.ALL) && (!objExists(srcId, srcRev))))
 			throw new IllegalArgumentException("Source with id = " + srcId + " does not exist.");
-		if (!forceDestExists && 
+		if (forceDestExists && 
 			(((destRev == ModelVersionDBService.ALL) && (!objExists(destId))) ||
 			((destRev != ModelVersionDBService.ALL) && (!objExists(destId, destRev)))))
 				throw new IllegalArgumentException("Destination with id = " + destId + " does not exist.");
