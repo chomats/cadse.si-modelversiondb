@@ -4670,7 +4670,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 						break;
 				}
 			}
-			if (uuidExists(localid)) throw new ModelVersionDBException("");
+			if (uuidExists(localid)) throw new ModelVersionDBException("Internal error");
 
 			querySB = getInsertQuery(UUID_TAB, true, UUID_TAB_ID_COL, UUID_TAB_MSB_COL, UUID_TAB_LSB_COL);
 			query = getEndQuery(querySB);
