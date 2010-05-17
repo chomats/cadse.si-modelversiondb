@@ -124,10 +124,6 @@
             <artifactId>bak.pcj</artifactId>
         </dependency>
         <dependency>
-        	<groupId>org.eclipse</groupId>
-        	<artifactId>org.eclipse.osgi</artifactId>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.felix</groupId>
         	<artifactId>org.apache.felix.ipojo</artifactId>
         </dependency>
@@ -135,6 +131,15 @@
         	<groupId>org.mod4j.org.apache.commons</groupId>
         	<artifactId>logging</artifactId>
         	<version>1.0.4</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.osgi</groupId>
+        	<artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.felix</groupId>
+        	<artifactId>javax.servlet</artifactId>
+        	<version>1.0.0</version>
         </dependency>
     </dependencies>
     
