@@ -582,7 +582,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
 	public void start() {
 		try {
-			_dbPath = new File(platformIDE.getLocation(true), CADSEDB_NAME).getAbsolutePath();
+			_dbPath = new File(platformIDE.getLocation(), CADSEDB_NAME).getAbsolutePath();
 			setConnectionURL(ModelVersionDBService.HSQL_IN_FILE, null, 0, 
 					_dbPath,
 					SA, "");
@@ -596,8 +596,6 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	private void openConnection(ConnectionDef connection) {
