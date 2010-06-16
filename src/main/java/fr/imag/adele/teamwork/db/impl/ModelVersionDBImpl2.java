@@ -25,6 +25,7 @@ import static fr.imag.adele.teamwork.db.impl.SQLConstants.*;
 import static fr.imag.adele.teamwork.db.impl.TableConstants2.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -50,6 +51,8 @@ import bak.pcj.list.IntArrayList;
 import bak.pcj.list.IntList;
 import bak.pcj.map.IntKeyOpenHashMap;
 import bak.pcj.set.IntBitSet;
+import fr.imag.adele.cadse.as.platformide.IPlatformIDE;
+import fr.imag.adele.cadse.as.platformide.IPlatformListener;
 import fr.imag.adele.cadse.core.CadseException;
 import java.util.UUID;
 
@@ -95,7 +98,7 @@ import fr.imag.adele.teamwork.db.TransactionException;
 public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 
     
-	private static final String CADSEDB_NAME = "cadsedb";
+	private static final String CADSEDB_NAME = ".cadsedb";
 
 	private static final String SA = "SA";
 
@@ -572,22 +575,27 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	public synchronized boolean isConnected() {
 		return (m_connection != null) && (!m_connection.isClosed());
 	}
+	
+	IPlatformIDE platformIDE;
+
+	private String _dbPath;
 
 	public void start() {
-		//
 		try {
-			setConnectionURL(ModelVersionDBService.HSQL_IN_FILE, null, 0, _bc.getDataFile(CADSEDB_NAME).getAbsolutePath(),
+			_dbPath = new File(platformIDE.getLocation(), CADSEDB_NAME).getAbsolutePath();
+			setConnectionURL(ModelVersionDBService.HSQL_IN_FILE, null, 0, 
+					_dbPath,
 					SA, "");
+			// Reset the connection if closed
+			for (ConnectionDef connection : m_connections.values()) {
+				openConnection(connection);
+			}
+
+			m_started = true;
 		} catch (TransactionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// Reset the connection if closed
-		for (ConnectionDef connection : m_connections.values()) {
-			openConnection(connection);
-		}
-
-		m_started = true;
 	}
 
 	private void openConnection(ConnectionDef connection) {
@@ -669,7 +677,7 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 		try {
 			Connection c = DriverManager.getConnection(
 			        "jdbc:hsqldb:file:"+
-			        _bc.getDataFile(CADSEDB_NAME).getAbsolutePath()+";shutdown=true", SA, "");
+			        _dbPath+";shutdown=true", SA, "");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

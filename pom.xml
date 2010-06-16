@@ -147,6 +147,10 @@
         	<artifactId>javax.servlet</artifactId>
         	<version>1.0.0</version>
         </dependency>
+        <dependency>
+        	<groupId>fr.imag.adele.cadse</groupId>
+        	<artifactId>as.platformeIDE</artifactId>
+        </dependency>
     </dependencies>
     
     <reporting>
