@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>fr.imag.adele.cadse</groupId>
+    <groupId>fr.imag.adele.cadse.runtime</groupId>
     <artifactId>si.ModelVersionDB</artifactId>
     <packaging>bundle</packaging>
     <name>fr.imag.adele.cadse.si.ModelVersionDB</name>
@@ -10,7 +10,7 @@
     <description>Service implementation of a multi version database for models using HSQLDB or MySQL</description>
 	<parent>
 		<artifactId>fr.imag.adele.cadse.parent.ipojo</artifactId>
-		<groupId>fr.imag.adele.cadse</groupId>
+		<groupId>fr.imag.adele.cadse.runtime</groupId>
 		<version>2.3.0-SNAPSHOT</version>
 		<relativePath>../fr.imag.adele.cadse.parent.ipojo</relativePath>
 	</parent>
@@ -148,7 +148,7 @@
         	<version>1.0.0</version>
         </dependency>
         <dependency>
-        	<groupId>fr.imag.adele.cadse</groupId>
+        	<groupId>fr.imag.adele.cadse.runtime</groupId>
         	<artifactId>as.platformeIDE</artifactId>
         </dependency>
     </dependencies>
