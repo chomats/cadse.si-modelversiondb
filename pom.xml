@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.imag.adele.cadse.runtime</groupId>
-    <artifactId>si.ModelVersionDB</artifactId>
+    <artifactId>si.modelversiondb</artifactId>
     <packaging>bundle</packaging>
     <name>fr.imag.adele.cadse.si.ModelVersionDB</name>
     <version>2.3.0-SNAPSHOT</version>
@@ -105,11 +105,11 @@
   		<version>1.8.0.1</version>
   	</dependency>
   	<dependency>
-			<groupId>mysql.bundle</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.11</version>
-			<scope>runtime</scope>
-		</dependency>
+		<groupId>bundle</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.11</version>
+		<scope>runtime</scope>
+	</dependency>
   	<dependency>
   		<groupId>com.oracle</groupId>
   		<artifactId>ojdbc14</artifactId>
