@@ -136,9 +136,9 @@ public class ConnectionDef {
 		
 		if (isHSQL())
 			urlSB.append("hsqldb");
-		if (isMySQL())
+		else if (isMySQL())
 			urlSB.append("mysql");
-		if (isOracle())
+		else if (isOracle())
 			urlSB.append("oracle");
 		
 		urlSB.append(":");
