@@ -601,15 +601,14 @@ public class ModelVersionDBImpl2 implements ModelVersionDBService2 {
 	private void openConnection(ConnectionDef connection) {
 		try {
 			connection.openConnection();
+			initConnection(connection);
+			try {
+				initSavepointPrefix();
+			} catch (ModelVersionDBException e) {
+				m_logger.log(Logger.ERROR, "Transaction support cannot be initialized for " + m_connection, e);
+			}
 		} catch (DBConnectionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		initConnection(connection);
-		try {
-			initSavepointPrefix();
-		} catch (ModelVersionDBException e) {
-			m_logger.log(Logger.ERROR, "Transaction support cannot be initialized for " + m_connection, e);
+			m_logger.log(Logger.ERROR, "Cannot initialized connection " + m_connection, e1);
 		}
 	}
 
