@@ -151,7 +151,7 @@
         <dependency>
         	<groupId>fr.imag.adele.cadse</groupId>
         	<artifactId>as.platformeIDE</artifactId>
-    		<version>2.3.1</version>
+    		<version>2.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
