@@ -18,7 +18,7 @@
 		<properties configurable="true">
 			<property field="m_allowAdmin" name="db.allowAdmin" type="boolean"/>
 		</properties>
-		<requires field="platformIDE" optional="false"/>
+		<requires field="platformIDE" optional="false" proxy="false" nullable="false"/>
 	</component>
 	<instance component="fr.imag.adele.teamwork.db.impl.ModelVersionDBImpl2" name="fr.imag.adele.cadse.si.workspace.modelversiondbimpl2.instance">
 		<property name="db.allowAdmin" value="true" type="boolean"/>
